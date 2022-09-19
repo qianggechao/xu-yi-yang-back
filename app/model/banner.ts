@@ -26,7 +26,7 @@ module.exports = (app: Application) => {
       sort: { type: Number, required: true, unique: true },
       remarks: { type: String },
     },
-    { timestamps: true }
+    { timestamps: true },
   );
 
   return mongoose.model<BannerType>('Banner', BannerSchema);

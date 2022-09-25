@@ -1,7 +1,7 @@
 import { Controller } from 'egg';
 
-export default class HomeController extends Controller {
-  public async index() {
+export default class BannerController extends Controller {
+  public async list() {
     const { ctx } = this;
     ctx.body = await ctx.model.Banner.find();
   }

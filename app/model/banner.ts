@@ -1,8 +1,7 @@
 import { Application } from 'egg';
-import { ObjectId } from 'mongoose';
+import { Document } from 'mongoose';
 
-interface BannerType {
-  id: ObjectId;
+interface BannerType extends Document {
   title: string;
   description: string;
   ype: string;
@@ -12,11 +11,11 @@ interface BannerType {
   remarks?: string;
 }
 
-module.exports = (app: Application) => {
+const BannerModel = (app: Application) => {
   const mongoose = app.mongoose;
   const Schema = mongoose.Schema;
 
-  const BannerSchema = new Schema<BannerType>(
+  const BannerSchema = new Schema(
     {
       title: { type: String, required: true },
       description: { type: String, required: true },
@@ -32,7 +31,4 @@ module.exports = (app: Application) => {
   return mongoose.model<BannerType>('Banner', BannerSchema);
 };
 
-// {app_root}/app/controller/user.js
-// exports.index = function* (ctx) {
-//   ctx.body = yield ctx.model.BannerSchema.find({});
-// };
+export default BannerModel;

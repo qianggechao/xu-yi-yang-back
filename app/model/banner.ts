@@ -32,3 +32,4 @@ const BannerModel = (app: Application) => {
 };
 
 export default BannerModel;
+

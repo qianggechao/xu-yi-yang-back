@@ -11,10 +11,21 @@ export default (appInfo: EggAppInfo) => {
 
     mongoose: {
       client: {
-        url: 'mongodb://43.143.101.114:27017/xu-yi-yang',
-        options: {},
+        // kj local url: mongodb://jakequc:jakequc132333@localhost:27017/yiyang-xu-db
+        // url: 'mongodb://43.143.101.114:27017/xu-yi-yang',
+        url: 'mongodb://jakequc:jakequc132333@localhost:27017/yiyang-xu-db',
+        options: {
+          useUnifiedTopology: true,
+        } as any,
         // mongoose global plugins, expected a function or an array of function and options
         // plugins: [createdPlugin, [updatedPlugin, pluginOptions]],
+      },
+    },
+
+    // TODO: production need remove below option
+    security: {
+      csrf: {
+        enable: false,
       },
     },
   };

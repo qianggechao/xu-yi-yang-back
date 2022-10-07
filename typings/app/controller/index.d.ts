@@ -4,10 +4,12 @@
 import 'egg';
 import ExportBanner from '../../../app/controller/banner';
 import ExportHome from '../../../app/controller/home';
+import ExportUserController from '../../../app/controller/userController';
 
 declare module 'egg' {
   interface IController {
     banner: ExportBanner;
     home: ExportHome;
+    userController: ExportUserController;
   }
 }

@@ -7,13 +7,14 @@ export default (appInfo: EggAppInfo) => {
     keys: appInfo.name + '_1662719314913_2123',
 
     // add your egg config in here
-    middleware: [],
+    middleware: ['verifyToken'],
 
     mongoose: {
       client: {
         // kj local url: mongodb://jakequc:jakequc132333@localhost:27017/yiyang-xu-db
         // url: 'mongodb://43.143.101.114:27017/xu-yi-yang',
-        url: 'mongodb://jakequc:jakequc132333@localhost:27017/yiyang-xu-db',
+        // url: 'mongodb://jakequc:jakequc132333@localhost:27017/yiyang-xu-db',
+        url: 'mongodb://localhost:27017/yiyang-xu-db?authSource=admin',
         options: {
           useUnifiedTopology: true,
         } as any,

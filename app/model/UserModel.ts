@@ -20,7 +20,3 @@ const UserModel = (app: Application) => {
 };
 
 export default UserModel;
-
-// class UserModelC {
-//   constructor()
-// }

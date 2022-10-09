@@ -73,7 +73,7 @@ export default class UserController extends Controller {
     const { email, password, ...restUser } = ctx.request.body;
     const { userService } = ctx.service;
 
-    const existUser = await ctx.service.userService.findUserByEmail(email);
+    const existUser = await userService.findUserByEmail(email);
 
     if (existUser) {
       ctx.body = {
@@ -113,7 +113,7 @@ export default class UserController extends Controller {
     const { password, email } = ctx.request.body;
     const { userService } = ctx.service;
 
-    const existUser = await ctx.service.userService.findOne({
+    const existUser = await userService.findOne({
       password: this.encryptPassword(password),
       email,
     });

@@ -8,9 +8,10 @@ export default class UserService extends Service {
 
     // password not should return frontend
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...rest } = info;
+    // TODO: 扩展的 rest 多了许多的东西
+    // const { password, ...rest } = info;
 
-    return rest;
+    return info;
   }
 
   public async findUserByEmail(email: string): Promise<UserType | null> {
@@ -18,7 +19,7 @@ export default class UserService extends Service {
   }
 
   public async findById(id: string): Promise<UserType | null> {
-    return this.ctx.model.UserModel.findById(id);
+    return this.ctx.model.UserModel.findById(id, { password: 0 });
   }
 
   public async createUser(userInfo: UserType): Promise<UserType> {

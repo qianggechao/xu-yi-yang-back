@@ -2,12 +2,12 @@
 // Do not modify this file!!!!!!!!!
 
 import 'egg';
-import ExportBanner from '../../../app/model/Banner';
 import ExportUserModel from '../../../app/model/UserModel';
+import ExportBanner from '../../../app/model/banner';
 
 declare module 'egg' {
   interface IModel {
-    Banner: ReturnType<typeof ExportBanner>;
     UserModel: ReturnType<typeof ExportUserModel>;
+    Banner: ReturnType<typeof ExportBanner>;
   }
 }

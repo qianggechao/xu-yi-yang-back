@@ -6,3 +6,8 @@ export type ResponseBase<T = any> = {
   success: boolean;
   err: any;
 };
+
+export type Page = {
+  currentPage: number;
+  pageSize: number;
+};

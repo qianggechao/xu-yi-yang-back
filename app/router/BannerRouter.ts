@@ -5,5 +5,5 @@ export default (app: Application) => {
 
   router.get('/', controller.home.index);
 
-  router.get('/banner/list', controller.banner.list);
+  router.get('/banner/list', controller.bannerController.list);
 };

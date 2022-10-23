@@ -2,13 +2,15 @@
 // Do not modify this file!!!!!!!!!
 
 import 'egg';
-import ExportBanner from '../../../app/controller/banner';
+import ExportBannerController from '../../../app/controller/bannerController';
+import ExportBaseController from '../../../app/controller/baseController';
 import ExportHome from '../../../app/controller/home';
 import ExportUserController from '../../../app/controller/userController';
 
 declare module 'egg' {
   interface IController {
-    banner: ExportBanner;
+    bannerController: ExportBannerController;
+    baseController: ExportBaseController;
     home: ExportHome;
     userController: ExportUserController;
   }

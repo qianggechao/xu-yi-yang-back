@@ -1,15 +1,5 @@
 import { Application } from 'egg';
-import { Document } from 'mongoose';
-
-interface BannerType extends Document {
-  title: string;
-  description: string;
-  ype: string;
-  link: string;
-  url: string;
-  sort: number;
-  remarks?: string;
-}
+import { BannerType } from '../typings/banner';
 
 const BannerModel = (app: Application) => {
   const mongoose = app.mongoose;
@@ -32,4 +22,3 @@ const BannerModel = (app: Application) => {
 };
 
 export default BannerModel;
-

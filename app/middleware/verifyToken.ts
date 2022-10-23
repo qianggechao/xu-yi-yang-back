@@ -16,14 +16,16 @@ export default (secret) => {
           // 有 token 需要校验
           let decode = ctx.app.jwt.verify(token, secret);
           console.log('token 需要校验', decode);
+
           await next();
         } else {
           // token 不存在
-          ctx.status = 200;
-          ctx.body = {
-            status: 401,
-            desc: 'token不存在',
-          };
+          await next();
+          // ctx.status = 200;
+          // ctx.body = {
+          //   status: 401,
+          //   desc: 'token不存在',
+          // };
         }
       }
     } catch (error) {
@@ -31,8 +33,8 @@ export default (secret) => {
       ctx.status = 200;
 
       ctx.body = {
-        status: 401,
-        desc: 'token已过期，请重新登录',
+        success: false,
+        error,
       };
     }
   };

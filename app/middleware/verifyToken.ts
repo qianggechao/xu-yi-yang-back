@@ -4,13 +4,14 @@ export default (secret) => {
     const { url = '', header } = ctx.request;
 
     const { authorization: token } = header;
-    console.log('ctx.request: ', ctx.request);
 
     // /public/xxx router not need verify token
     // TODO: need modified
+
+    // /^\/public\//.test(url)
     try {
       if (/^\/public\//.test(url)) {
-        await next();
+        // await next();
       } else {
         if (token) {
           // 有 token 需要校验

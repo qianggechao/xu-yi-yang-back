@@ -49,11 +49,11 @@ export default class UserController extends Controller {
     const { ctx } = this;
     const { userService } = ctx.service;
 
-    userService
+    await userService
       .findBy()
       .then((res: UserType[]) => {
         ctx.body = {
-          data: res.map((user) => userService.formatUserInfo(user)),
+          data: res?.map((user) => userService.formatUserInfo(user)),
           message: 'fined user success',
           success: true,
         };

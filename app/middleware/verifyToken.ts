@@ -1,10 +1,8 @@
-export default (secret) => {
+export default () => {
   return async function verifyToken(ctx, next) {
     // 若是没有 token, 返回的是 null 字符串
-    const { url = '', header } = ctx.request;
-
-    const { token } = header || {};
-    console.log('token:', token);
+    const { url = '', headers, header } = ctx.request;
+    const { token } = headers || header || {};
 
     // /public/xxx router not need verify token
     // TODO: need modified
@@ -16,9 +14,10 @@ export default (secret) => {
       } else {
         if (token) {
           // 有 token 需要校验
-          const { id } = (await ctx.app.jwt.verify(token, secret)) || {};
+          const { id } =
+            (await ctx.app.jwt.verify(token, ctx.app.config.jwt.secret)) || {};
 
-          const existUser = ctx.service.userService.findById(id);
+          const existUser = await ctx.service.userService.findById(id);
           if (existUser) {
             await next();
           } else {

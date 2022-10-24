@@ -3,7 +3,8 @@ export default (secret) => {
     // 若是没有 token, 返回的是 null 字符串
     const { url = '', header } = ctx.request;
 
-    const { authorization: token } = header;
+    const { token } = header || {};
+    console.log('token:', token);
 
     // /public/xxx router not need verify token
     // TODO: need modified
@@ -11,31 +12,37 @@ export default (secret) => {
     // /^\/public\//.test(url)
     try {
       if (/^\/public\//.test(url)) {
-        // await next();
+        await next();
       } else {
         if (token) {
           // 有 token 需要校验
-          let decode = ctx.app.jwt.verify(token, secret);
-          console.log('token 需要校验', decode);
+          const { id } = (await ctx.app.jwt.verify(token, secret)) || {};
 
-          await next();
+          const existUser = ctx.service.userService.findById(id);
+          if (existUser) {
+            await next();
+          } else {
+            ctx.body = {
+              success: false,
+              msg: 'have no right',
+              status: 403,
+            };
+          }
         } else {
           // token 不存在
-          await next();
-          // ctx.status = 200;
-          // ctx.body = {
-          //   status: 401,
-          //   desc: 'token不存在',
-          // };
+          ctx.body = {
+            status: 403,
+            desc: 'token不存在',
+          };
         }
       }
     } catch (error) {
-      console.log('error', error);
-      ctx.status = 200;
+      console.error('error', error);
 
       ctx.body = {
         success: false,
-        error,
+        msg: 'Server error',
+        status: 501,
       };
     }
   };

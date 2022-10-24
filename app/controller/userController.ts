@@ -119,10 +119,20 @@ export default class UserController extends Controller {
     });
 
     if (existUser) {
+      // 生成 token 信息，然后将 token 返回给前端，前端做 localStorage 加在请求头 返回给后端（后端再做校验）
+      const token = this.app.jwt.sign(
+        {
+          email,
+          id: existUser._id,
+        },
+        this.app.config.jwt.secret,
+      );
+
       ctx.body = {
-        data: userService.formatUserInfo(existUser),
-        message: 'login success',
+        token,
         success: true,
+        message: 'login success',
+        data: userService.formatUserInfo(existUser),
       };
     } else {
       ctx.body = {

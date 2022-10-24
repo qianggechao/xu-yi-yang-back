@@ -38,6 +38,8 @@
     "egg-bin": "^4.11.0",
     "egg-mock": "^3.16.0",
     "eslint": "^8.0.0",
+    "egg-cors": "^2.2.3",
+    "egg-jwt": "^3.1.7",
     "eslint-config-egg": "^12.0.0",
     "typescript": "^4.0.0"
   },

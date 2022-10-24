@@ -29,6 +29,17 @@ export default (appInfo: EggAppInfo) => {
         enable: false,
       },
     },
+
+    // Configuring the jwt secret
+    jwt: {
+      secret: 'xuyiyang-website-jwt-key',
+    },
+
+    // Enable CORS
+    cors: {
+      origin: '*',
+      allowMethods: 'GET, HEAD, PUT, POST, DELETE, PATCH',
+    },
   };
 
   // add your special config in here

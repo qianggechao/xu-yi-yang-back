@@ -31,7 +31,7 @@ export default () => {
           // token 不存在
           ctx.body = {
             status: 403,
-            desc: 'token不存在',
+            msg: 'token不存在',
           };
         }
       }

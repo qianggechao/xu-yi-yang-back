@@ -15,13 +15,13 @@ export default class UserController extends Controller {
         if (res) {
           ctx.body = {
             data: userService.formatUserInfo(res),
-            message: 'find user information success',
+            msg: 'find user information success',
             success: true,
           };
         } else {
           ctx.body = {
             data: null,
-            message: 'find user information failed',
+            msg: 'find user information failed',
             success: false,
           };
         }
@@ -29,7 +29,7 @@ export default class UserController extends Controller {
       .catch((err) => {
         ctx.body = {
           data: null,
-          message: 'find user information failed',
+          msg: 'find user information failed',
           success: false,
           err,
         };
@@ -54,14 +54,14 @@ export default class UserController extends Controller {
       .then((res: UserType[]) => {
         ctx.body = {
           data: res?.map((user) => userService.formatUserInfo(user)),
-          message: 'fined user success',
+          msg: 'fined user success',
           success: true,
         };
       })
       .catch((err) => {
         ctx.body = {
           data: null,
-          message: 'fined user failed',
+          msg: 'fined user failed',
           success: false,
           err,
         };
@@ -78,7 +78,7 @@ export default class UserController extends Controller {
     if (existUser) {
       ctx.body = {
         data: null,
-        message: 'account already existed',
+        msg: 'account already existed',
         success: false,
       };
 
@@ -94,14 +94,14 @@ export default class UserController extends Controller {
       .then((res) => {
         ctx.body = {
           data: userService.formatUserInfo(res),
-          message: 'create user success',
+          msg: 'create user success',
           success: true,
         };
       })
       .catch((err) => {
         ctx.body = {
           data: null,
-          message: 'create user failed',
+          msg: 'create user failed',
           success: false,
           err,
         };
@@ -131,13 +131,13 @@ export default class UserController extends Controller {
       ctx.body = {
         token,
         success: true,
-        message: 'login success',
+        msg: 'login success',
         data: userService.formatUserInfo(existUser),
       };
     } else {
       ctx.body = {
         data: null,
-        message: 'account or password error',
+        msg: 'account or password error',
         success: false,
         err: new Error('account or password error'),
       };

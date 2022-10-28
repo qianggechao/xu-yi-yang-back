@@ -2,7 +2,7 @@
 
 export type ResponseBase<T = any> = {
   data: T;
-  message: string;
+  msg: string;
   success: boolean;
   err: any;
 };

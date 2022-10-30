@@ -34,6 +34,8 @@ jobs:
           password: ${{ secrets.SEVER_PASSWORD }}
           port: 22
           script: |
+            DOCKER_CLIENT_TIMEOUT: 500 # add for docker compose startup timeout
+            COMPOSE_HTTP_TIMEOUT: 500  # add for docker compose startup timeout
             cd /tmp
             docker compose down
             docker compose up -d

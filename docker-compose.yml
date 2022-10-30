@@ -2,10 +2,7 @@ version: '3.2'
 services:
   egg-server:
     container_name: egg-server
-    # image: postgres:11.8
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/qiangqiangtech/xyy-backend:master
     logging:
       driver: "json-file"
       options:

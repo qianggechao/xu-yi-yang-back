@@ -25,3 +25,14 @@ jobs:
           platforms: linux/amd64
           tags: |
             ghcr.io/qiangqiangtech/xyy-backend:master
+
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      with:
+        host: 43.143.101.114
+        username: root
+        password: ${{ secrets.SERVER_PASSWORD }}
+        port: 22
+        script: |
+          docker compose down
+          docker compose up -d

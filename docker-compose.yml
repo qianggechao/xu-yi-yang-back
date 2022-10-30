@@ -2,14 +2,16 @@ version: '3.2'
 services:
   egg-server:
     container_name: egg-server
-    image: ghcr.io/qiangqiangtech/xyy-backend:master
+    # image: postgres:11.8
+    build:
+      context: .
+      dockerfile: Dockerfile
     logging:
       driver: "json-file"
       options:
         max-size: "5m"
         max-file: "10"
     ports:
-      - "127.0.0.1:7001:7001"
-    network_mode: host
-    command: >
+      - 7001:7001
+    command: |
       npm run start

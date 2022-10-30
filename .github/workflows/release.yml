@@ -22,4 +22,6 @@ jobs:
             cd xu-yi-yang-back
             npm i
             npm run tsc
-            npm run dev
+            rm -rf node_modules
+            npm i --production
+            npm start

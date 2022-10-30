@@ -33,10 +33,11 @@ jobs:
           username: root
           password: ${{ secrets.SEVER_PASSWORD }}
           port: 22
+          command_timeout: 30m
           script: |
             export DOCKER_CLIENT_TIMEOUT=1200
             export COMPOSE_HTTP_TIMEOUT=1200
             cd /tmp
-            docker compose down
             docker compose pull
+            docker compose down
             docker compose up -d

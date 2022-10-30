@@ -31,7 +31,7 @@ jobs:
         with:
           host: 43.143.101.114
           username: root
-          password: ${{ secrets.SERVER_PASSWORD }}
+          password: ${{ secrets.SEVER_PASSWORD }}
           port: 22
           script: |
             docker compose down

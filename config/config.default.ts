@@ -12,9 +12,9 @@ export default (appInfo: EggAppInfo) => {
     mongoose: {
       client: {
         // kj local url: mongodb://jakequc:jakequc132333@localhost:27017/yiyang-xu-db
-        // url: 'mongodb://43.143.101.114:27017/xu-yi-yang',
+        url: 'mongodb://43.143.101.114:27017/xu-yi-yang',
         // url: 'mongodb://jakequc:jakequc132333@localhost:27017/yiyang-xu-db',
-        url: 'mongodb://localhost:27017/yiyang-xu-db?authSource=admin',
+        // url: 'mongodb://localhost:27017/yiyang-xu-db?authSource=admin',
         options: {
           useUnifiedTopology: true,
         } as any,

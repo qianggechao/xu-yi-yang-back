@@ -38,4 +38,5 @@ jobs:
             COMPOSE_HTTP_TIMEOUT: 500  # add for docker compose startup timeout
             cd /tmp
             docker compose down
+            docker compose pull
             docker compose up -d

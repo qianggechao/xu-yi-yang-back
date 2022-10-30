@@ -34,5 +34,6 @@ jobs:
           password: ${{ secrets.SEVER_PASSWORD }}
           port: 22
           script: |
+            cd /tmp
             docker compose down
             docker compose up -d

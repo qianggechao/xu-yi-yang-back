@@ -7,25 +7,6 @@ jobs:
   build-to-server:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout server code
-        uses: actions/checkout@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io/qiangqiangtech/xyy-backend
-          username: ${{ github.actor }}
-          password: ${{ secrets.TOKEN }}
-
-      - name: Build image and push to GitHub Container Registry
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          platforms: linux/amd64
-          tags: |
-            ghcr.io/qiangqiangtech/xyy-backend:master
-
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@master
         with:
@@ -35,9 +16,10 @@ jobs:
           port: 22
           command_timeout: 30m
           script: |
-            export DOCKER_CLIENT_TIMEOUT=1200
-            export COMPOSE_HTTP_TIMEOUT=1200
             cd /tmp
-            docker compose pull
-            docker compose down
-            docker compose up -d
+            rm -rf xu-yi-yang-back
+            git clone https://github.com/qianggechao/xu-yi-yang-back.git
+            cd xu-yi-yang-back
+            npm i
+            npm run tsc
+            npm run dev

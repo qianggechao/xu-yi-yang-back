@@ -1,7 +1,6 @@
 name: Test
 
-on:
-  push
+on: push
 
 jobs:
   build-to-server:

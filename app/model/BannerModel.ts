@@ -15,7 +15,7 @@ const BannerModel = (app: Application) => {
       sort: { type: Number, required: true, unique: true },
       remarks: { type: String },
     },
-    { timestamps: true },
+    { timestamps: true, versionKey: false },
   );
 
   return mongoose.model<BannerType>('Banner', BannerSchema);

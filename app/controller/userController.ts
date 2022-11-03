@@ -1,9 +1,9 @@
-import { Controller } from 'egg';
+import BaseController from './baseController';
 import { UserType } from '../typings/user';
 import crypto from 'crypto';
 import { SECRET_KEY } from '../../config';
 
-export default class UserController extends Controller {
+export default class UserController extends BaseController {
   public async userInfo() {
     const { ctx } = this;
     const { id } = ctx.request.body;
@@ -26,12 +26,12 @@ export default class UserController extends Controller {
           };
         }
       })
-      .catch((err) => {
+      .catch((error) => {
         ctx.body = {
           data: null,
           msg: 'find user information failed',
           success: false,
-          err,
+          error,
         };
       });
   }
@@ -71,6 +71,8 @@ export default class UserController extends Controller {
   public async createUser() {
     const { ctx } = this;
     const { email, password, ...restUser } = ctx.request.body;
+    this.logger.info('createUser input', ctx.request.body);
+
     const { userService } = ctx.service;
 
     const existUser = await userService.findUserByEmail(email);
@@ -85,27 +87,35 @@ export default class UserController extends Controller {
       return;
     }
 
-    await userService
-      .createUser({
-        email,
-        password: this.encryptPassword(password),
-        ...restUser,
-      })
-      .then((res) => {
-        ctx.body = {
-          data: userService.formatUserInfo(res),
-          msg: 'create user success',
-          success: true,
-        };
-      })
-      .catch((err) => {
-        ctx.body = {
-          data: null,
-          msg: 'create user failed',
-          success: false,
-          err,
-        };
-      });
+    if (password.length < 6) {
+      this.ctx.body = {
+        success: false,
+        data: null,
+        msg: '密码长度小于6位',
+      };
+    } else {
+      await userService
+        .createUser({
+          email,
+          password: this.encryptPassword(password),
+          ...restUser,
+        })
+        .then((res) => {
+          ctx.body = {
+            data: userService.formatUserInfo(res),
+            msg: 'create user success',
+            success: true,
+          };
+        })
+        .catch((error) => {
+          ctx.body = {
+            data: null,
+            msg: 'create user failed',
+            success: false,
+            error,
+          };
+        });
+    }
   }
 
   public async loginUser() {
@@ -139,8 +149,12 @@ export default class UserController extends Controller {
         data: null,
         msg: 'account or password error',
         success: false,
-        err: new Error('account or password error'),
+        error: new Error('account or password error'),
       };
     }
+  }
+
+  public async deleteMany() {
+    this.setBody(this.service.userService.deleteMany());
   }
 }

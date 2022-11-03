@@ -14,4 +14,6 @@ export default (app: Application) => {
   router.post('/public/userList', userController.userList);
 
   router.post('/public/createUser', userController.createUser);
+
+  router.post('/public/user/deleteMany', userController.deleteMany);
 };

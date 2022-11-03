@@ -35,4 +35,8 @@ export default class UserService extends Service {
   ): Promise<UserType | null> {
     return this.ctx.model.UserModel.findOne(filter);
   }
+
+  public async deleteMany() {
+    return this.ctx.model.UserModel.deleteMany();
+  }
 }

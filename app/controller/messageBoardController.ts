@@ -1,13 +1,23 @@
 import BaseController from './baseController';
 
 export default class MessageBoardModelController extends BaseController {
-  findLlist() {
+  async list() {
     const { ctx, service } = this;
-    this.setBody(service.messageBoardService.findList(ctx.request.query));
+
+    const page = this.getPage(ctx.request.query);
+    const query = this.filterPage(ctx.request.query);
+
+    ctx.body = {
+      success: true,
+      ...(await service.messageBoardService.findList(query, page)),
+    };
   }
 
-  create() {
+  async create() {
     const { ctx, service } = this;
-    this.setBody(service.messageBoardService.create(ctx.request.body));
+    ctx.body = {
+      success: true,
+      ...(await service.messageBoardService.create(ctx.request.body)),
+    };
   }
 }

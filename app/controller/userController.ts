@@ -155,6 +155,23 @@ export default class UserController extends BaseController {
   }
 
   public async deleteMany() {
-    this.setBody(this.service.userService.deleteMany());
+    const { ctx, service } = this;
+
+    try {
+      await service.userService.deleteMany();
+      ctx.body = {
+        data: [],
+        success: true,
+        msg: '',
+        error: {},
+      };
+    } catch (error) {
+      ctx.body = {
+        success: false,
+        data: null,
+        error,
+        msg: 'deleteMany user error',
+      };
+    }
   }
 }

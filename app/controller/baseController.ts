@@ -32,4 +32,22 @@ export default class BaseController extends Controller {
     msg = msg || 'not found';
     this.ctx.throw(404, msg);
   }
+
+  getPage(query: Record<string, any>) {
+    return {
+      currentPage: parseInt(query?.currentPage || 1),
+      pageSize: parseInt(query?.pageSize || 10),
+    };
+  }
+
+  filterPage(query: Record<string, any>) {
+    const copyQuery = { ...query };
+    for (const key in copyQuery) {
+      if (key === 'currentPage' || key === 'pageSize' || key === 'total') {
+        delete copyQuery[key];
+      }
+    }
+
+    return copyQuery;
+  }
 }

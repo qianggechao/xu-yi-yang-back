@@ -7,15 +7,13 @@ export default class MessageBoardService extends Service {
   async findList(message: FilterQuery<MessageBoardType>, page?: Page) {
     const { currentPage = 1, pageSize = 10 } = page ?? {};
 
-    const data = this.ctx.model.MessageBoardModel.find(message)
-      .skip(currentPage)
+    const data = await this.ctx.model.MessageBoardModel.find(message)
       .limit(pageSize)
-      .sort({ sort: -1 })
-      .exec();
+      .skip(pageSize * (currentPage - 1));
 
-    const total = this.ctx.model.MessageBoardModel.find(message)
-      .countDocuments()
-      .exec();
+    const total = await this.ctx.model.MessageBoardModel.find(
+      message,
+    ).countDocuments();
 
     return {
       data,
@@ -25,7 +23,15 @@ export default class MessageBoardService extends Service {
     };
   }
 
-  async create(message: FilterQuery<MessageBoardType>) {
-    return this.ctx.model.MessageBoardModel.create(message);
+  async create(message: {
+    userId: string;
+    content: string;
+    type?: string;
+    links?: number;
+  }) {
+    const { userId, ...rest } = message;
+    const user = await this.service.userService.findById(userId);
+
+    return this.ctx.model.MessageBoardModel.create({ ...rest, user });
   }
 }

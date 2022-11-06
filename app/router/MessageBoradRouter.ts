@@ -4,11 +4,8 @@ export default (app: Application) => {
   const { controller, router } = app;
 
   router.get(
-    'public/messageBoard/list',
-    controller.messageBoardController.findLlist,
+    '/public/messageBoard/list',
+    controller.messageBoardController.list,
   );
-  router.post(
-    'public/messageBoard/create',
-    controller.messageBoardController.create,
-  );
+  router.post('/messageBoard/create', controller.messageBoardController.create);
 };

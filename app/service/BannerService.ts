@@ -10,18 +10,17 @@ export default class Banner extends Service {
   public async findList(banner?: FilterQuery<BannerType>, page?: Page) {
     const { currentPage = 1, pageSize = 10 } = page ?? {};
 
-    const banners = this.ctx.model.BannerModel.find(banner ?? {});
-    const data = banners
-      .skip(currentPage)
-      .limit(pageSize)
-      .sort({ sort: -1 })
+    const data = await this.ctx.model.BannerModel.find(banner ?? {}).exec();
+
+    const total = await this.ctx.model.BannerModel.find(banner ?? {})
+      .countDocuments()
       .exec();
 
     return {
       data,
       currentPage,
       pageSize,
-      total: banners.countDocuments().exec(),
+      total,
     };
   }
 

@@ -19,7 +19,7 @@ export default class UserService extends Service {
   }
 
   public async findById(id: string): Promise<UserType | null> {
-    return this.ctx.model.UserModel.findById(id, { password: 0 });
+    return this.ctx.model.UserModel.findById(id);
   }
 
   public async createUser(userInfo: UserType): Promise<UserType> {

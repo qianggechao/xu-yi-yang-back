@@ -1,21 +1,27 @@
+import { Context } from 'egg';
+import filterEmptyObject from '../uitls/filterEmptyObject';
+
 export default () => {
-  return async function verifyToken(ctx, next) {
+  return async function verifyToken(ctx: Context, next: any) {
     // 若是没有 token, 返回的是 null 字符串
-    const { url = '', headers, header } = ctx.request;
+    const { url = '', headers, header, body, query } = ctx.request;
     const { token } = headers || header || {};
 
     // /public/xxx router not need verify token
     // TODO: need modified
+    ctx.request.body = filterEmptyObject(body);
+    ctx.request.query = filterEmptyObject(query);
 
-    // /^\/public\//.test(url)
     try {
       if (/^\/public\//.test(url)) {
         await next();
       } else {
         if (token) {
           // 有 token 需要校验
-          const { id } =
-            (await ctx.app.jwt.verify(token, ctx.app.config.jwt.secret)) || {};
+          const { id } = ((await ctx.app.jwt.verify(
+            token as string,
+            ctx.app.config.jwt.secret,
+          )) || {}) as Record<string, any>;
 
           const existUser = await ctx.service.userService.findById(id);
           if (existUser) {

@@ -35,13 +35,13 @@ export default (appInfo: EggAppInfo) => {
       secret: 'xuyiyang-website-jwt-key',
     },
 
-    cluster: {
-      listen: {
-        port: 7003,
-        hostname: '0.0.0.0', // 不建议设置 hostname 为 '0.0.0.0'，它将允许来自外部网络和来源的连接，请在知晓风险的情况下使用
-        // path: '/var/run/egg.sock',
-      },
-    },
+    // cluster: {
+    //   listen: {
+    //     port: 7003,
+    //     hostname: '0.0.0.0', // 不建议设置 hostname 为 '0.0.0.0'，它将允许来自外部网络和来源的连接，请在知晓风险的情况下使用
+    //     // path: '/var/run/egg.sock',
+    //   },
+    // },
 
     // Enable CORS
     cors: {

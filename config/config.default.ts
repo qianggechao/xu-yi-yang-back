@@ -28,6 +28,7 @@ export default (appInfo: EggAppInfo) => {
       csrf: {
         enable: false,
       },
+      domainWhiteList: ['http://*', 'https://*'],
     },
 
     // Configuring the jwt secret

@@ -87,7 +87,7 @@ export default class UserController extends BaseController {
       return;
     }
 
-    if (password.length < 6) {
+    if (password?.length < 6) {
       this.ctx.body = {
         success: false,
         data: null,

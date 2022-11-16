@@ -23,8 +23,8 @@ export default (appInfo: EggAppInfo) => {
 
         options: {
           useUnifiedTopology: true,
-          user: process.env.USEERNAME,
-          pass: process.env.PASSWORD,
+          user: process.env.MONGO_USERNAME,
+          pass: process.env.MONGO_PASSWORD,
         } as any,
         // mongoose global plugins, expected a function or an array of function and options
         // plugins: [createdPlugin, [updatedPlugin, pluginOptions]],
@@ -36,7 +36,7 @@ export default (appInfo: EggAppInfo) => {
     //   csrf: {
     //     enable: false,
     //   },
-    //   domainWhiteList: ['*'],
+    //   domainWhiteList: ['http://*', 'https://*'],
     // },
 
     // cors: {

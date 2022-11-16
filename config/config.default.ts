@@ -1,5 +1,10 @@
 import { EggAppConfig, EggAppInfo, PowerPartial } from 'egg';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+import * as dotenv from 'dotenv';
 
+dotenv.config();
+
+console.log(process.env.MONGO_USERNAME);
 export default (appInfo: EggAppInfo) => {
   const config: PowerPartial<EggAppConfig> = {
     // override config from framework / plugin
@@ -15,8 +20,11 @@ export default (appInfo: EggAppInfo) => {
         url: 'mongodb://43.143.101.114:27017/xu-yi-yang',
         // url: 'mongodb://jakequc:jakequc132333@localhost:27017/yiyang-xu-db',
         // url: 'mongodb://localhost:27017/yiyang-xu-db?authSource=admin',
+
         options: {
           useUnifiedTopology: true,
+          user: process.env.USEERNAME,
+          pass: process.env.PASSWORD,
         } as any,
         // mongoose global plugins, expected a function or an array of function and options
         // plugins: [createdPlugin, [updatedPlugin, pluginOptions]],

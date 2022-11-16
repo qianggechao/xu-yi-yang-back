@@ -19,6 +19,9 @@ jobs:
             rm -rf xu-yi-yang-back
             git clone https://github.com/qianggechao/xu-yi-yang-back.git
             cd xu-yi-yang-back
+            touch .env
+            echo "MONGO_USERNAME=${{ env.USERNAME }}" >> .env
+            echo "MONGO_PASSWORD=${{ env.PASSWORD }}" >> .env
             npm i
             npm stop
             npm run tsc

@@ -15,10 +15,10 @@ jobs:
           port: 22
           command_timeout: 30m
           script: |
-            cd /root/
+            cd /tmp
             rm -rf xu-yi-yang-back
             git clone https://github.com/qianggechao/xu-yi-yang-back.git
-            cd /root/xu-yi-yang-back
+            cd /tmp/xu-yi-yang-back
             sh /config.sh
             npm i
             npm stop

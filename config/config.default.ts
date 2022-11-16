@@ -51,12 +51,6 @@ export default (appInfo: EggAppInfo) => {
     //     // path: '/var/run/egg.sock',
     //   },
     // },
-
-    // Enable CORS
-    cors: {
-      origin: '*',
-      allowMethods: 'GET, HEAD, PUT, POST, DELETE, PATCH',
-    },
   };
 
   // add your special config in here

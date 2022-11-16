@@ -32,17 +32,17 @@ export default (appInfo: EggAppInfo) => {
     },
 
     // TODO: production need remove below option
-    // security: {
-    //   csrf: {
-    //     enable: false,
-    //   },
-    //   domainWhiteList: ['http://*', 'https://*'],
-    // },
+    security: {
+      csrf: {
+        enable: false,
+      },
+      // domainWhiteList: ['http://*', 'https://*'],
+    },
 
-    // cors: {
-    //   origin: '*',
-    //   allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
-    // },
+    cors: {
+      origin: '*',
+      allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
+    },
 
     // Configuring the jwt secret
     jwt: {

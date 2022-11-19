@@ -12,9 +12,15 @@ const UserModel = (app: Application) => {
       password: { type: String, required: true },
       avator: { type: String },
       brief: { type: String },
+      type: {
+        type: String,
+        required: true,
+        enum: ['admin', 'user', 'superAdmin'],
+      },
     },
     {
       timestamps: true,
+      versionKey: false,
     },
   );
 

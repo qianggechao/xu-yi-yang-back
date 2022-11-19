@@ -68,6 +68,16 @@ export default class UserController extends BaseController {
       });
   }
 
+  async userSearch() {
+    const { ctx } = this;
+    const { userService } = ctx.service;
+
+    ctx.body = {
+      success: true,
+      data: await userService.useerSearch(ctx.query?.keyword ?? ''),
+    };
+  }
+
   public async createUser() {
     const { ctx } = this;
     const { email, password, ...restUser } = ctx.request.body;

@@ -20,4 +20,25 @@ export default class MessageBoardModelController extends BaseController {
       ...(await service.messageBoardService.create(ctx.request.body)),
     };
   }
+
+  async update() {
+    const { ctx, service } = this;
+
+    ctx.body = {
+      success: true,
+      data: await service.messageBoardService.update(
+        ctx.request.body.id,
+        ctx.request.body,
+      ),
+    };
+  }
+
+  async delete() {
+    const { ctx, service } = this;
+
+    ctx.body = {
+      success: true,
+      data: await service.messageBoardService.delete(ctx.request.body.id),
+    };
+  }
 }

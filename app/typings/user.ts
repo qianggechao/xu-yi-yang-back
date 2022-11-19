@@ -7,4 +7,5 @@ export type UserType = {
   avator: string;
   // 个性签名
   brief: string;
+  type: 'admin' | 'user' | 'superAdmin';
 };

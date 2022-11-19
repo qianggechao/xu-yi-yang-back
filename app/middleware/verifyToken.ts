@@ -9,6 +9,7 @@ export default () => {
 
     // /public/xxx router not need verify token
     // TODO: need modified
+
     ctx.request.body = filterEmptyObject(body);
     ctx.request.query = filterEmptyObject(query);
 
@@ -24,14 +25,30 @@ export default () => {
           )) || {}) as Record<string, any>;
 
           const existUser = await ctx.service.userService.findById(id);
-          if (existUser) {
-            await next();
+
+          if (/^\/admin\//.test(url)) {
+            if (
+              existUser?.type === 'admin' ||
+              existUser?.type === 'superAdmin'
+            ) {
+              await next();
+            } else {
+              ctx.body = {
+                success: false,
+                msg: 'You not the administrator',
+                status: 403,
+              };
+            }
           } else {
-            ctx.body = {
-              success: false,
-              msg: 'have no right',
-              status: 403,
-            };
+            if (existUser) {
+              await next();
+            } else {
+              ctx.body = {
+                success: false,
+                msg: 'have no right',
+                status: 403,
+              };
+            }
           }
         } else {
           // token 不存在

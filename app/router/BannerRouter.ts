@@ -7,5 +7,5 @@ export default (app: Application) => {
 
   router.get('/public/banner/list', controller.bannerController.list);
 
-  router.post('/public/banner/create', controller.bannerController.create);
+  router.post('/banner/create', controller.bannerController.create);
 };

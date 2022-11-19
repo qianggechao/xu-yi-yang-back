@@ -4,6 +4,7 @@ import { UserType } from './user';
 export interface MessageBoardType extends Document {
   user: UserType;
   content: string;
-  type?: string;
+  type: string;
   links?: number;
+  tag?: string;
 }

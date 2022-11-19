@@ -7,5 +7,17 @@ export default (app: Application) => {
     '/public/messageBoard/list',
     controller.messageBoardController.list,
   );
-  router.post('/messageBoard/create', controller.messageBoardController.create);
+
+  router.post(
+    '/admin/messageBoard/create',
+    controller.messageBoardController.create,
+  );
+  router.post(
+    '/admin/messageBoard/update',
+    controller.messageBoardController.update,
+  );
+  router.post(
+    '/admin/messageBoard/delete',
+    controller.messageBoardController.delete,
+  );
 };

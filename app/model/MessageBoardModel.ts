@@ -20,7 +20,7 @@ const MessageBoardModel = (app: Application) => {
       likes: Number,
       tag: String,
     },
-    { timestamps: true },
+    { timestamps: true, versionKey: false },
   );
 
   return mongoose.model<MessageBoardType>(

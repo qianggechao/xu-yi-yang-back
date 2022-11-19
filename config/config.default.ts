@@ -39,10 +39,10 @@ export default (appInfo: EggAppInfo) => {
       // domainWhiteList: ['http://*', 'https://*'],
     },
 
-    // cors: {
-    //   origin: '*',
-    //   allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
-    // },
+    cors: {
+      origin: '*',
+      allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
+    },
 
     // Configuring the jwt secret
     jwt: {

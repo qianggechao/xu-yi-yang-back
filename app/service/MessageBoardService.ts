@@ -1,7 +1,8 @@
 import { Service } from 'egg';
 import { MessageBoardType } from '../typings/messageBoard';
-import { FilterQuery, ObjectId } from 'mongoose';
+import { FilterQuery, Types } from 'mongoose';
 import { Page } from '../typings';
+import filterEmptyObject from '../uitls/filterEmptyObject';
 
 export default class MessageBoardService extends Service {
   async findList(
@@ -15,15 +16,20 @@ export default class MessageBoardService extends Service {
     page?: Page,
   ) {
     const { currentPage = 1, pageSize = 10 } = page ?? {};
+    const { userId, ...rest } = message;
+    const { ObjectId } = Types;
 
-    const data = await this.ctx.model.MessageBoardModel.find({
-      user: { _id: ObjectId('') },
-    })
+    const query = filterEmptyObject({
+      ...{ 'user._id': userId ? ObjectId(userId.toString()) : '' },
+      ...rest,
+    });
+
+    const data = await this.ctx.model.MessageBoardModel.find(query)
       .limit(pageSize)
       .skip(pageSize * (currentPage - 1));
 
     const total = await this.ctx.model.MessageBoardModel.find(
-      message,
+      query,
     ).countDocuments();
 
     return {

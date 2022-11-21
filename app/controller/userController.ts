@@ -90,7 +90,7 @@ export default class UserController extends BaseController {
     if (existUser) {
       ctx.body = {
         data: null,
-        msg: 'account already existed',
+        msg: '邮箱已被注册',
         success: false,
       };
 
@@ -109,6 +109,7 @@ export default class UserController extends BaseController {
           email,
           password: this.encryptPassword(password),
           ...restUser,
+          type: 'user',
         })
         .then((res) => {
           ctx.body = {

@@ -11,7 +11,7 @@ const formatMsg = (errors: InvalidError[]) => {
   );
 };
 
-const errorInfo = (error: any) => {
+const getErrorInfo = (error: any) => {
   if (error?.code === 'invalid_param') {
     return {
       error,
@@ -29,4 +29,4 @@ const errorInfo = (error: any) => {
   };
 };
 
-export default errorInfo;
+export default getErrorInfo;

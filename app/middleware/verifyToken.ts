@@ -1,4 +1,5 @@
 import { Context } from 'egg';
+import errorInfo from '../uitls/errorinfo';
 import filterEmptyObject from '../uitls/filterEmptyObject';
 
 export default () => {
@@ -58,14 +59,10 @@ export default () => {
           };
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('error', error);
 
-      ctx.body = {
-        success: false,
-        msg: 'Server error',
-        status: 501,
-      };
+      ctx.body = errorInfo(error);
     }
   };
 };

@@ -16,9 +16,16 @@ const MessageBoardModel = (app: Application) => {
         brief: { type: String },
       },
       content: { type: String, required: true },
-      type: { type: String, required: true },
-      likes: Number,
-      tag: String,
+      type: {
+        type: String,
+        required: true,
+        enum: ['message', 'complaint', 'suggest'],
+      },
+      likes: { type: Number, default: 0 },
+      tag: {
+        type: String,
+        enum: ['hot', 'best', 'top'],
+      },
     },
     { timestamps: true, versionKey: false },
   );

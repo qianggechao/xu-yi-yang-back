@@ -80,6 +80,15 @@ export default class UserController extends BaseController {
 
   public async createUser() {
     const { ctx } = this;
+    ctx.validate(
+      {
+        nickName: { type: 'string', required: true, max: 24 },
+        email: { type: 'string', required: true, max: 54 },
+        password: { type: 'string', required: true, max: 18, min: 6 },
+      },
+      ctx.request.body,
+    );
+
     const { email, password, ...restUser } = ctx.request.body;
     this.logger.info('createUser input', ctx.request.body);
 
@@ -97,36 +106,90 @@ export default class UserController extends BaseController {
       return;
     }
 
-    if (password?.length < 6) {
-      this.ctx.body = {
-        success: false,
+    await userService
+      .createUser({
+        email,
+        password: this.encryptPassword(password),
+        ...restUser,
+        type: 'user',
+      })
+      .then((res) => {
+        ctx.body = {
+          data: userService.formatUserInfo(res),
+          msg: 'create user success',
+          success: true,
+        };
+      })
+      .catch((error) => {
+        ctx.body = {
+          data: null,
+          msg: 'create user failed',
+          success: false,
+          error,
+        };
+      });
+  }
+
+  public async createAdmin() {
+    const { ctx } = this;
+    ctx.validate(
+      {
+        nickName: { type: 'string', required: true },
+        email: { type: 'string', required: true },
+        password: { type: 'string', required: true },
+        secretKey: 'string',
+      },
+      ctx.request.body,
+    );
+
+    const { email, password, secretKey, ...restUser } = ctx.request.body;
+    const { userService } = ctx.service;
+
+    if (
+      this.encryptPassword(secretKey) !== '43aa747e79cefe7141fdc69339bdbb9f'
+    ) {
+      ctx.body = {
         data: null,
-        msg: '密码长度小于6位',
+        msg: '密钥错误',
+        success: false,
       };
-    } else {
-      await userService
-        .createUser({
-          email,
-          password: this.encryptPassword(password),
-          ...restUser,
-          type: 'user',
-        })
-        .then((res) => {
-          ctx.body = {
-            data: userService.formatUserInfo(res),
-            msg: 'create user success',
-            success: true,
-          };
-        })
-        .catch((error) => {
-          ctx.body = {
-            data: null,
-            msg: 'create user failed',
-            success: false,
-            error,
-          };
-        });
+
+      return;
     }
+
+    const existUser = await userService.findUserByEmail(email);
+    if (existUser) {
+      ctx.body = {
+        data: null,
+        msg: '邮箱已被注册',
+        success: false,
+      };
+
+      return;
+    }
+
+    await userService
+      .createUser({
+        email,
+        password: this.encryptPassword(password),
+        ...restUser,
+        type: 'admin',
+      })
+      .then((res) => {
+        ctx.body = {
+          data: userService.formatUserInfo(res),
+          msg: 'create admin success',
+          success: true,
+        };
+      })
+      .catch((error) => {
+        ctx.body = {
+          data: null,
+          msg: 'create admin failed',
+          success: false,
+          error,
+        };
+      });
   }
 
   public async loginUser() {

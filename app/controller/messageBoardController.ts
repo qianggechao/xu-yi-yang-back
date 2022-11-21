@@ -1,3 +1,7 @@
+import {
+  messageBoardTagEnum,
+  messageBoardTypeEnum,
+} from '../enum/messageBoard';
 import BaseController from './baseController';
 
 export default class MessageBoardModelController extends BaseController {
@@ -15,6 +19,18 @@ export default class MessageBoardModelController extends BaseController {
 
   async create() {
     const { ctx, service } = this;
+
+    ctx.validate(
+      {
+        userId: { type: 'string', required: true },
+        content: { type: 'string', required: true },
+        type: { type: 'enum', values: messageBoardTypeEnum, required: true },
+        tag: { type: 'enum', values: messageBoardTagEnum, required: false },
+        likes: { type: 'integer', required: false },
+      },
+      ctx.request.body,
+    );
+
     ctx.body = {
       success: true,
       ...(await service.messageBoardService.create(ctx.request.body)),
@@ -23,6 +39,17 @@ export default class MessageBoardModelController extends BaseController {
 
   async update() {
     const { ctx, service } = this;
+
+    ctx.validate(
+      {
+        id: { type: 'string', required: true },
+        content: { type: 'string', required: true },
+        type: { type: 'enum', values: messageBoardTypeEnum, required: true },
+        tag: { type: 'enum', values: messageBoardTagEnum, required: false },
+        likes: { type: 'integer', required: false },
+      },
+      ctx.request.body,
+    );
 
     ctx.body = {
       success: true,
@@ -35,6 +62,8 @@ export default class MessageBoardModelController extends BaseController {
 
   async delete() {
     const { ctx, service } = this;
+
+    ctx.validate({ id: 'string' }, ctx.request.body);
 
     ctx.body = {
       success: true,

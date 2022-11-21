@@ -32,7 +32,7 @@ export default class UserService extends Service {
 
   public async useerSearch(keyword: string): Promise<UserType[]> {
     return this.ctx.model.UserModel.find({
-      $or: [{ nickName: keyword }, { email: keyword }],
+      $or: [{ nickName: { $regex: keyword } }, { email: { $regex: keyword } }],
     });
   }
 

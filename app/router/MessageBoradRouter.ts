@@ -8,10 +8,7 @@ export default (app: Application) => {
     controller.messageBoardController.list,
   );
 
-  router.post(
-    '/admin/messageBoard/create',
-    controller.messageBoardController.create,
-  );
+  router.post('/messageBoard/create', controller.messageBoardController.create);
   router.post(
     '/admin/messageBoard/update',
     controller.messageBoardController.update,

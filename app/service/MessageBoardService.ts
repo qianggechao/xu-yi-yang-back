@@ -1,6 +1,6 @@
 import { Service } from 'egg';
 import { MessageBoardType } from '../typings/messageBoard';
-import { FilterQuery, Types } from 'mongoose';
+import { FilterQuery, Types, UpdateQuery } from 'mongoose';
 import { Page } from '../typings';
 import filterEmptyObject from '../uitls/filterEmptyObject';
 
@@ -54,11 +54,9 @@ export default class MessageBoardService extends Service {
 
   async update(
     id: string,
-    update: FilterQuery<Omit<MessageBoardType, 'user'>>,
+    update: UpdateQuery<Omit<MessageBoardType, 'user'>>,
   ) {
-    return this.ctx.model.MessageBoardModel.findByIdAndUpdate(id, {
-      $set: update,
-    });
+    return this.ctx.model.MessageBoardModel.findByIdAndUpdate(id, update);
   }
 
   async delete(id: string) {

@@ -1,6 +1,7 @@
 import { UserType } from './../typings/user';
 import { Service } from 'egg';
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, UpdateQuery } from 'mongoose';
+import { Page } from '../typings';
 
 export default class UserService extends Service {
   public formatUserInfo(info: UserType | null) {
@@ -44,5 +45,32 @@ export default class UserService extends Service {
 
   public async deleteMany() {
     return this.ctx.model.UserModel.deleteMany();
+  }
+
+  async findList(filter?: FilterQuery<UserType>, page?: Page) {
+    const { pageSize = 10, currentPage = 1 } = page ?? {};
+
+    const data = await this.ctx.model.UserModel.find(filter ?? {})
+      .limit(pageSize)
+      .skip(pageSize * (currentPage - 1));
+
+    const total = await this.ctx.model.UserModel.find(
+      filter ?? {},
+    ).countDocuments();
+
+    return {
+      data,
+      currentPage,
+      pageSize,
+      total,
+    };
+  }
+
+  async delete(id: string) {
+    return this.ctx.model.UserModel.findByIdAndDelete(id);
+  }
+
+  async updete(id: string, update: UpdateQuery<UserType>) {
+    return this.ctx.model.UserModel.findByIdAndUpdate(id, update);
   }
 }

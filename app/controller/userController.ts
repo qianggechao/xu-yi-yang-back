@@ -1,7 +1,7 @@
 import BaseController from './baseController';
-import { UserType } from '../typings/user';
 import crypto from 'crypto';
 import { SECRET_KEY } from '../../config';
+import deleteObjectKey from '../uitls/deleteObjectKey';
 
 export default class UserController extends BaseController {
   public async userInfo() {
@@ -49,23 +49,13 @@ export default class UserController extends BaseController {
     const { ctx } = this;
     const { userService } = ctx.service;
 
-    await userService
-      .findBy()
-      .then((res: UserType[]) => {
-        ctx.body = {
-          data: res?.map((user) => userService.formatUserInfo(user)),
-          msg: 'fined user success',
-          success: true,
-        };
-      })
-      .catch((err) => {
-        ctx.body = {
-          data: null,
-          msg: 'fined user failed',
-          success: false,
-          err,
-        };
-      });
+    const page = this.getPage(ctx.request.query);
+    const query = this.filterPage(ctx.request.query);
+
+    ctx.body = {
+      success: true,
+      ...(await userService.findList(query, page)),
+    };
   }
 
   async userSearch() {
@@ -83,7 +73,7 @@ export default class UserController extends BaseController {
     ctx.validate(
       {
         nickName: { type: 'string', required: true, max: 24 },
-        email: { type: 'string', required: true, max: 54 },
+        email: { type: 'email', required: true, max: 54 },
         password: { type: 'string', required: true, max: 18, min: 6 },
       },
       ctx.request.body,
@@ -247,5 +237,42 @@ export default class UserController extends BaseController {
         msg: 'deleteMany user error',
       };
     }
+  }
+
+  async delete() {
+    const { ctx } = this;
+    const { userService } = ctx.service;
+
+    ctx.validate({ id: { type: 'string', required: true } }, ctx.request.query);
+
+    ctx.body = {
+      success: true,
+      data: await userService.delete(ctx.request.query.id),
+    };
+  }
+
+  async update() {
+    const { ctx } = this;
+    const { userService } = ctx.service;
+
+    ctx.validate(
+      {
+        id: { type: 'string', required: true },
+        nickName: { type: 'string', required: false },
+        avator: { type: 'string', required: false },
+        brief: { type: 'string', required: false },
+      },
+      ctx.request.body,
+    );
+
+    const body = deleteObjectKey(
+      ['email', 'password', 'type'],
+      ctx.request.body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await userService.updete(ctx.request.body.id, body),
+    };
   }
 }

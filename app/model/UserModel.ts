@@ -15,7 +15,7 @@ const UserModel = (app: Application) => {
       type: {
         type: String,
         required: true,
-        enum: ['admin', 'user', 'superAdmin'],
+        enum: [ 'admin', 'user', 'superAdmin' ],
       },
     },
     {

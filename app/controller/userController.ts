@@ -266,7 +266,7 @@ export default class UserController extends BaseController {
     );
 
     const body = deleteObjectKey(
-      ['email', 'password', 'type'],
+      [ 'email', 'password', 'type' ],
       ctx.request.body,
     );
 

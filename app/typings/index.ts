@@ -4,7 +4,7 @@ export type ResponseBase<T = any> = {
   data: T;
   msg: string;
   success: boolean;
-  error: Object;
+  error: Record<string, any>;
 };
 
 export type Page = {

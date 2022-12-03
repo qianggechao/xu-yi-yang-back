@@ -19,12 +19,12 @@ const MessageBoardModel = (app: Application) => {
       type: {
         type: String,
         required: true,
-        enum: ['message', 'complaint', 'suggest'],
+        enum: [ 'message', 'complaint', 'suggest' ],
       },
       likes: { type: Number, default: 0 },
       tag: {
         type: String,
-        enum: ['hot', 'best', 'top'],
+        enum: [ 'hot', 'best', 'top' ],
       },
     },
     { timestamps: true, versionKey: false },

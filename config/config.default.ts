@@ -12,7 +12,7 @@ export default (appInfo: EggAppInfo) => {
     keys: appInfo.name + '_1662719314913_2123',
 
     // add your egg config in here
-    middleware: ['verifyToken'],
+    middleware: [ 'verifyToken' ],
 
     mongoose: {
       client: {

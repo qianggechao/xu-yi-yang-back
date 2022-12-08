@@ -36,14 +36,7 @@ export default (appInfo: EggAppInfo) => {
       csrf: {
         enable: false,
       },
-      domainWhiteList: [
-        'https://xuyiyang.cloud',
-        'https://www.xuyiyang.cloud',
-        'https://xu-yi-yang.top',
-        'https://www.xu-yi-yang.top',
-        'https://xyyang.top',
-        'https://www.xyyang.top',
-      ],
+      domainWhiteList: ['http://*', 'https://*'],
     },
 
     // cors: {

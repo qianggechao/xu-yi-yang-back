@@ -36,7 +36,7 @@ export default (appInfo: EggAppInfo) => {
       csrf: {
         enable: false,
       },
-      domainWhiteList: ['http://*', 'https://*'],
+      // domainWhiteList: ['http://*', 'https://*'],
     },
 
     // cors: {

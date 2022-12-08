@@ -26,7 +26,8 @@ export default class MessageBoardService extends Service {
 
     const data = await this.ctx.model.MessageBoardModel.find(query)
       .limit(pageSize)
-      .skip(pageSize * (currentPage - 1));
+      .skip(pageSize * (currentPage - 1))
+      .sort({ tag: -1, createdAt: 1 });
 
     const total = await this.ctx.model.MessageBoardModel.find(
       query,

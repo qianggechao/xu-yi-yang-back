@@ -200,6 +200,7 @@ export default class UserController extends BaseController {
           id: existUser._id,
         },
         this.app.config.jwt.secret,
+        { expiresIn: '48h' },
       );
 
       ctx.body = {
@@ -266,7 +267,7 @@ export default class UserController extends BaseController {
     );
 
     const body = deleteObjectKey(
-      [ 'email', 'password', 'type' ],
+      ['email', 'password', 'type'],
       ctx.request.body,
     );
 

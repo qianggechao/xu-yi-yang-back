@@ -1,6 +1,6 @@
-export default (kyes: string[], object: Record<string, any>) => {
+export default (keys: string[], object: Record<string, any>) => {
   for (const key in object) {
-    if (kyes.includes(key)) {
+    if (keys.includes(key)) {
       delete object[key];
     }
   }

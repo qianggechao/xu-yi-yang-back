@@ -1,7 +1,7 @@
 import {
   messageBoardTagEnum,
   messageBoardTypeEnum,
-} from '../enum/messageBoard';
+} from '../typings/messageBoard';
 import BaseController from './baseController';
 
 export default class MessageBoardModelController extends BaseController {
@@ -24,8 +24,16 @@ export default class MessageBoardModelController extends BaseController {
       {
         userId: { type: 'string', required: true },
         content: { type: 'string', required: true },
-        type: { type: 'enum', values: messageBoardTypeEnum, required: true },
-        tag: { type: 'enum', values: messageBoardTagEnum, required: false },
+        type: {
+          type: 'enum',
+          values: Object.keys(messageBoardTypeEnum),
+          required: true,
+        },
+        tag: {
+          type: 'enum',
+          values: Object.keys(messageBoardTagEnum),
+          required: false,
+        },
         likes: { type: 'integer', required: false },
       },
       ctx.request.body,

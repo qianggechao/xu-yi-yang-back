@@ -1,5 +1,9 @@
 import { Application } from 'egg';
-import { MessageBoardType } from '../typings/messageBoard';
+import {
+  messageBoardTagEnum,
+  MessageBoardType,
+  messageBoardTypeEnum,
+} from '../typings/messageBoard';
 import { Types } from 'mongoose';
 
 const MessageBoardModel = (app: Application) => {
@@ -12,19 +16,19 @@ const MessageBoardModel = (app: Application) => {
         _id: { type: Types.ObjectId, required: true },
         nickName: { type: String, required: true },
         email: { type: String, required: true },
-        avator: { type: String, default: '' },
+        avatar: { type: String, default: '' },
         brief: { type: String, default: '' },
       },
       content: { type: String, required: true },
       type: {
         type: String,
         required: true,
-        enum: ['message', 'complaint', 'suggest'],
+        enum: Object.keys(messageBoardTypeEnum),
       },
       likes: { type: Number, default: 0 },
       tag: {
         type: String,
-        enum: ['hot', 'best', 'top'],
+        enum: Object.keys(messageBoardTagEnum),
       },
     },
     { timestamps: true, versionKey: false },

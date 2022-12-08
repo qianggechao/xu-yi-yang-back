@@ -260,7 +260,7 @@ export default class UserController extends BaseController {
       {
         id: { type: 'string', required: true },
         nickName: { type: 'string', required: false },
-        avator: { type: 'string', required: false },
+        avatar: { type: 'string', required: false },
         brief: { type: 'string', required: false },
       },
       ctx.request.body,

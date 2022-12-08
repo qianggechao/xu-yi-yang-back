@@ -10,12 +10,12 @@ const UserModel = (app: Application) => {
       nickName: { type: String, required: true },
       email: { type: String, required: true, unique: true },
       password: { type: String, required: true },
-      avator: { type: String },
+      avatar: { type: String },
       brief: { type: String },
       type: {
         type: String,
         required: true,
-        enum: [ 'admin', 'user', 'superAdmin' ],
+        enum: ['admin', 'user', 'superAdmin'],
       },
     },
     {

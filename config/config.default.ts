@@ -12,7 +12,7 @@ export default (appInfo: EggAppInfo) => {
     keys: appInfo.name + '_1662719314913_2123',
 
     // add your egg config in here
-    middleware: [ 'verifyToken' ],
+    middleware: ['verifyToken'],
 
     mongoose: {
       client: {
@@ -36,7 +36,14 @@ export default (appInfo: EggAppInfo) => {
       csrf: {
         enable: false,
       },
-      // domainWhiteList: ['http://*', 'https://*'],
+      domainWhiteList: [
+        'https://xuyiyang.cloud',
+        'https://www.xuyiyang.cloud',
+        'https://xu-yi-yang.top',
+        'https://www.xu-yi-yang.top',
+        'https://xyyang.top',
+        'https://www.xyyang.top',
+      ],
     },
 
     // cors: {

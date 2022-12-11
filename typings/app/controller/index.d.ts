@@ -2,6 +2,7 @@
 // Do not modify this file!!!!!!!!!
 
 import 'egg';
+import ExportArticleController from '../../../app/controller/articleController';
 import ExportBannerController from '../../../app/controller/bannerController';
 import ExportBaseController from '../../../app/controller/baseController';
 import ExportHome from '../../../app/controller/home';
@@ -10,6 +11,7 @@ import ExportUserController from '../../../app/controller/userController';
 
 declare module 'egg' {
   interface IController {
+    articleController: ExportArticleController;
     bannerController: ExportBannerController;
     baseController: ExportBaseController;
     home: ExportHome;

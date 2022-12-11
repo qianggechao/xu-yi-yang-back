@@ -12,7 +12,7 @@ export default class Banner extends Service {
 
     const data = await this.ctx.model.BannerModel.find(banner ?? {})
       .limit(pageSize)
-      .skip(pageSize / (currentPage + 1))
+      .skip(pageSize * (currentPage - 1))
       .sort({ sort: 1 });
 
     const total = await this.ctx.model.BannerModel.find(

@@ -273,7 +273,7 @@ export default class UserController extends BaseController {
 
     ctx.body = {
       success: true,
-      data: await userService.updete(ctx.request.body.id, body),
+      data: await userService.update(ctx.request.body.id, body),
     };
   }
 }

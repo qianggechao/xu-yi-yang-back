@@ -32,7 +32,7 @@ export default class BannerController extends BaseController {
   async createBanner() {
     const { service, ctx } = this;
 
-    ctx.validate(bannerValidate, ctx.request.body);
+    ctx.validate(bannerValidate(), ctx.request.body);
 
     ctx.body = {
       success: true,
@@ -63,11 +63,11 @@ export default class BannerController extends BaseController {
   async deleteBanner() {
     const { service, ctx } = this;
 
-    ctx.validate({ id: { type: 'string', required: true } }, ctx.request.body);
+    ctx.validate({ id: { type: 'string', required: true } }, ctx.request.query);
 
     ctx.body = {
       success: true,
-      data: await service.bannerService.delete(ctx.request.body.id),
+      data: await service.bannerService.delete(ctx.request.query.id),
     };
   }
 }

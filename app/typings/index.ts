@@ -11,3 +11,9 @@ export type Page = {
   currentPage: number;
   pageSize: number;
 };
+
+export type BaseDocument = {
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
+};

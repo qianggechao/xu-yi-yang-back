@@ -70,7 +70,7 @@ export default class UserService extends Service {
     return this.ctx.model.UserModel.findByIdAndDelete(id);
   }
 
-  async updete(id: string, update: UpdateQuery<UserType>) {
+  async update(id: string, update: UpdateQuery<UserType>) {
     return this.ctx.model.UserModel.findByIdAndUpdate(id, update);
   }
 }

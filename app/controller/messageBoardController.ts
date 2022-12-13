@@ -4,6 +4,25 @@ import {
 } from '../typings/messageBoard';
 import BaseController from './baseController';
 
+const messageBoardValidate = (action: 'create' | 'update' = 'create') => {
+  const required = action === 'create';
+
+  return {
+    userId: { type: 'string', required },
+    content: { type: 'string', required },
+    type: {
+      type: 'enum',
+      values: Object.keys(messageBoardTypeEnum),
+      required,
+    },
+    tag: {
+      type: 'enum',
+      values: Object.keys(messageBoardTagEnum),
+      required: false,
+    },
+    likes: { type: 'integer', required: false },
+  };
+};
 export default class MessageBoardModelController extends BaseController {
   async list() {
     const { ctx, service } = this;
@@ -20,28 +39,11 @@ export default class MessageBoardModelController extends BaseController {
   async create() {
     const { ctx, service } = this;
 
-    ctx.validate(
-      {
-        userId: { type: 'string', required: true },
-        content: { type: 'string', required: true },
-        type: {
-          type: 'enum',
-          values: Object.keys(messageBoardTypeEnum),
-          required: true,
-        },
-        tag: {
-          type: 'enum',
-          values: Object.keys(messageBoardTagEnum),
-          required: false,
-        },
-        likes: { type: 'integer', required: false },
-      },
-      ctx.request.body,
-    );
+    ctx.validate(messageBoardValidate(), ctx.request.body);
 
     ctx.body = {
       success: true,
-      ...(await service.messageBoardService.create(ctx.request.body)),
+      data: await service.messageBoardService.create(ctx.request.body),
     };
   }
 
@@ -51,10 +53,7 @@ export default class MessageBoardModelController extends BaseController {
     ctx.validate(
       {
         id: { type: 'string', required: true },
-        content: { type: 'string', required: true },
-        type: { type: 'enum', values: messageBoardTypeEnum, required: true },
-        tag: { type: 'enum', values: messageBoardTagEnum, required: false },
-        likes: { type: 'integer', required: false },
+        ...messageBoardValidate('update'),
       },
       ctx.request.body,
     );

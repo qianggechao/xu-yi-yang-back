@@ -2,7 +2,7 @@ import { Service } from 'egg';
 import { MessageBoardType } from '../typings/messageBoard';
 import { FilterQuery, Types, UpdateQuery } from 'mongoose';
 import { Page } from '../typings';
-import filterEmptyObject from '../uitls/filterEmptyObject';
+import filterEmptyObject from '../utils/filterEmptyObject';
 
 export default class MessageBoardService extends Service {
   async findList(

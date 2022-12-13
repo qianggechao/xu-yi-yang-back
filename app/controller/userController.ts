@@ -1,7 +1,7 @@
 import BaseController from './baseController';
 import crypto from 'crypto';
 import { SECRET_KEY } from '../../config';
-import deleteObjectKey from '../uitls/deleteObjectKey';
+import deleteObjectKey from '../utils/deleteObjectKey';
 
 export default class UserController extends BaseController {
   public async userInfo() {

@@ -1,6 +1,6 @@
 import { Context } from 'egg';
-import getErrorInfo from '../uitls/getErrorInfo';
-import filterEmptyObject from '../uitls/filterEmptyObject';
+import getErrorInfo from '../utils/getErrorInfo';
+import filterEmptyObject from '../utils/filterEmptyObject';
 
 export default () => {
   return async function verifyToken(ctx: Context, next: any) {

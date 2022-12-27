@@ -32,6 +32,10 @@ export default class MusicService extends Service {
   }
 
   async update(id: string, update: UpdateQuery<MusicType>) {
-    this.ctx.model.MusicModel.findByIdAndUpdate(id, update);
+    return this.ctx.model.MusicModel.findByIdAndUpdate(id, update);
+  }
+
+  async delete(id: string) {
+    return this.ctx.model.MusicModel.findByIdAndDelete(id);
   }
 }

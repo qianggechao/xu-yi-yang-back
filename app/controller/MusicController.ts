@@ -43,4 +43,32 @@ export default class MusicController extends BaseController {
       data: await service.musicService.create(ctx.request.body),
     };
   }
+
+  async updateMusic() {
+    const { ctx, service } = this;
+
+    ctx.validate(
+      { ...musicValidate('update'), id: { type: 'string', required: true } },
+      ctx.request.body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.musicService.update(
+        ctx.request.body.id,
+        ctx.request.body,
+      ),
+    };
+  }
+
+  async deleteMusic() {
+    const { ctx, service } = this;
+
+    ctx.validate({ id: { type: 'string', required: true } }, ctx.request.query);
+
+    ctx.body = {
+      success: true,
+      data: await service.musicService.delete(ctx.request.query.id),
+    };
+  }
 }

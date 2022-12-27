@@ -9,4 +9,12 @@ export default (app: Application) => {
     '/admin/music/createMusic',
     controller.musicController.createMusic,
   );
+  router.post(
+    '/admin/music/updateMusic',
+    controller.musicController.updateMusic,
+  );
+  router.delete(
+    '/admin/music/deleteMusic',
+    controller.musicController.deleteMusic,
+  );
 };

@@ -19,7 +19,11 @@ export interface MusicType extends BaseDocument {
   cover?: string;
   avatar?: string;
   start?: number;
-  like?: number;
+  like?: {
+    count: number;
+    exist: boolean;
+    userIds: string[];
+  };
   message?: {
     count: number;
     data: {

@@ -4,6 +4,7 @@
     "project": "./tsconfig.json"
   },
   "rules": {
-    "arrow-parens": "off"
+    "arrow-parens": "off",
+    "array-bracket-spacing":"off"
   }
 }

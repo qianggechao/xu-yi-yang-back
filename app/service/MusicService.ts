@@ -12,10 +12,11 @@ export default class MusicService extends Service {
   async findList(filter?: FilterQuery<FilterMusic>, page?: Page) {
     const { currentPage = 1, pageSize = 10 } = page ?? {};
     const data = await this.ctx.model.MusicModel.find(filter ?? {}, {
-      'like.userIds': 0,
+      'like.userIds': 1,
     })
       .limit(pageSize)
-      .skip(pageSize * (currentPage - 1));
+      .skip(pageSize * (currentPage - 1))
+      .populate('message.data.user like.userIds._id', { password: 0 });
 
     const total = await this.ctx.model.MusicModel.find(
       filter ?? {},
@@ -60,9 +61,12 @@ export default class MusicService extends Service {
     });
 
     if (music) {
+      const count = music.like?.count || 0;
+
       return this.ctx.model.MusicModel.findByIdAndUpdate(id, {
         $pull: { 'like.userIds': userId },
-        'like.count': 0,
+        'like.count': count > 0 ? count - 1 : 0,
+        'like.isLike': false,
       });
     }
 
@@ -72,6 +76,26 @@ export default class MusicService extends Service {
     return this.ctx.model.MusicModel.findByIdAndUpdate(id, {
       $addToSet: { 'like.userIds': userId },
       'like.count': count + 1,
+      'like.isLike': true,
     });
+  }
+
+  async addMessage(id: string, userId: string, content: string) {
+    return this.ctx.model.MusicModel.findByIdAndUpdate(id, {
+      $push: {
+        'message.data': { content, user: userId },
+      },
+      'message.count': 1,
+    });
+  }
+
+  async updateMessage(musicId: string, messageId: string, content: string) {
+    this.ctx.model.MusicModel.findOneAndUpdate(
+      {
+        _id: musicId,
+        'message.data._id': messageId,
+      },
+      { $set: { 'message.data.$.content': content } },
+    );
   }
 }

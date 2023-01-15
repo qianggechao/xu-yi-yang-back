@@ -26,6 +26,7 @@ export default () => {
           )) || {}) as Record<string, any>;
 
           const existUser = await ctx.service.userService.findById(id);
+          ctx.state.user = existUser ?? {};
 
           if (/^\/admin\//.test(url)) {
             if (

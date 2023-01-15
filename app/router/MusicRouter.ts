@@ -26,6 +26,14 @@ export default (app: Application) => {
     '/admin/music/setMusicLike',
     controller.musicController.setMusicLike,
   );
+  router.post(
+    '/admin/music/addMusicMessage',
+    controller.musicController.addMusicMessage,
+  );
+  router.post(
+    '/admin/music/updateMusicMessage',
+    controller.musicController.updateMusicMessage,
+  );
 
   router.delete(
     '/admin/music/deleteMusic',

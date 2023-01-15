@@ -20,7 +20,7 @@ const MusicModel = (app: Application) => {
     avatar: String,
     start: {
       count: { type: Number, default: 0 },
-      exist: { type: Boolean, default: false },
+      isStart: { type: Boolean, default: false },
       userIds: [
         {
           type: String,
@@ -31,22 +31,22 @@ const MusicModel = (app: Application) => {
     },
     like: {
       count: { type: Number, default: 0 },
-      exist: { type: Boolean, default: false },
+      isLike: { type: Boolean, default: false },
       userIds: [
         {
           type: String,
           require: false,
-          _id: { type: mongoose.Types.ObjectId, unique: true },
+          _id: { type: mongoose.Types.ObjectId, ref: 'User', unique: true },
         },
       ],
     },
-    messages: {
+    message: {
       count: { type: Number, default: 0 },
       data: [
         {
-          _id: mongoose.Types.ObjectId,
+          _id: { type: mongoose.Types.ObjectId, require: true },
           content: { type: String, require: true },
-          user: { type: mongoose.Types.ObjectId, ref: 'user', require: true },
+          user: { type: mongoose.Types.ObjectId, ref: 'User', require: true },
         },
       ],
     },

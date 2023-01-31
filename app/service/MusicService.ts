@@ -11,12 +11,10 @@ type FilterMusic = {
 export default class MusicService extends Service {
   async findList(filter?: FilterQuery<FilterMusic>, page?: Page) {
     const { currentPage = 1, pageSize = 10 } = page ?? {};
-    const data = await this.ctx.model.MusicModel.find(filter ?? {}, {
-      'like.userIds': 1,
-    })
+    const data = await this.ctx.model.MusicModel.find(filter ?? {})
       .limit(pageSize)
       .skip(pageSize * (currentPage - 1))
-      .populate('message.data.user like.userIds._id', { password: 0 });
+      .populate('message.data.user like.userIds', { password: 0 });
 
     const total = await this.ctx.model.MusicModel.find(
       filter ?? {},
@@ -86,16 +84,26 @@ export default class MusicService extends Service {
         'message.data': { content, user: userId },
       },
       'message.count': 1,
-    });
+    }).populate('message.data.user like.userIds', { password: 0 });
   }
 
   async updateMessage(musicId: string, messageId: string, content: string) {
-    this.ctx.model.MusicModel.findOneAndUpdate(
+    return this.ctx.model.MusicModel.findOneAndUpdate(
       {
         _id: musicId,
         'message.data._id': messageId,
       },
       { $set: { 'message.data.$.content': content } },
-    );
+    ).populate('message.data.user like.userIds', { password: 0 });
+  }
+
+  async deleteMessage(musicId: string, messageId: string) {
+    return this.ctx.model.MusicModel.findOneAndUpdate(
+      {
+        _id: musicId,
+        'message.data._id': messageId,
+      },
+      { $pull: { 'message.data': { _id: messageId } } },
+    ).populate('message.data.user like.userIds', { password: 0 });
   }
 }

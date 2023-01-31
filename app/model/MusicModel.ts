@@ -23,9 +23,10 @@ const MusicModel = (app: Application) => {
       isStart: { type: Boolean, default: false },
       userIds: [
         {
-          type: String,
+          type: mongoose.Types.ObjectId,
+          ref: 'User',
           require: false,
-          _id: { type: mongoose.Types.ObjectId, unique: true },
+          unique: true,
         },
       ],
     },
@@ -34,9 +35,10 @@ const MusicModel = (app: Application) => {
       isLike: { type: Boolean, default: false },
       userIds: [
         {
-          type: String,
+          type: mongoose.Types.ObjectId,
+          ref: 'User',
           require: false,
-          _id: { type: mongoose.Types.ObjectId, ref: 'User', unique: true },
+          unique: true,
         },
       ],
     },
@@ -44,7 +46,7 @@ const MusicModel = (app: Application) => {
       count: { type: Number, default: 0 },
       data: [
         {
-          _id: { type: mongoose.Types.ObjectId, require: true },
+          _id: { type: mongoose.Types.ObjectId, require: true, auto: true },
           content: { type: String, require: true },
           user: { type: mongoose.Types.ObjectId, ref: 'User', require: true },
         },

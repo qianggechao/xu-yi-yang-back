@@ -68,7 +68,7 @@ export default class MusicController extends BaseController {
 
     ctx.body = {
       success: true,
-      data: await service.musicService.delete(ctx.request.query.id),
+      data: (await service.musicService.delete(ctx.request.query.id)) || {},
     };
   }
 
@@ -166,6 +166,24 @@ export default class MusicController extends BaseController {
         messageId,
         content,
       ),
+    };
+  }
+
+  async deleteMusicMessage() {
+    const { ctx, service } = this;
+
+    ctx.validate(
+      {
+        messageId: { type: 'string', required: true },
+        musicId: { type: 'string', required: true },
+      },
+      ctx.request.query,
+    );
+
+    const { messageId, musicId } = ctx.request.query;
+    ctx.body = {
+      success: true,
+      data: await service.musicService.deleteMessage(musicId, messageId),
     };
   }
 }

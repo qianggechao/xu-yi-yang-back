@@ -34,6 +34,10 @@ export default (app: Application) => {
     '/admin/music/updateMusicMessage',
     controller.musicController.updateMusicMessage,
   );
+  router.post(
+    '/admin/music/setMusicStart',
+    controller.musicController.setMusicStart,
+  );
 
   router.delete(
     '/admin/music/deleteMusic',

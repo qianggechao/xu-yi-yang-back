@@ -186,4 +186,22 @@ export default class MusicController extends BaseController {
       data: await service.musicService.deleteMessage(musicId, messageId),
     };
   }
+
+  async setMusicStart() {
+    const { ctx, service } = this;
+
+    ctx.validate(
+      {
+        userId: { type: 'string', required: true },
+        musicId: { type: 'string', required: true },
+      },
+      ctx.request.body,
+    );
+
+    const { userId, musicId } = ctx.request.body;
+    ctx.body = {
+      success: true,
+      data: await service.musicService.setStart(musicId, userId),
+    };
+  }
 }

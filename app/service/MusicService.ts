@@ -78,6 +78,32 @@ export default class MusicService extends Service {
     });
   }
 
+  async setStart(musicId: string, userId: string) {
+    const music = await this.ctx.model.MusicModel.findOne({
+      _id: musicId,
+      'start.userIds': userId,
+    });
+
+    if (music) {
+      const count = music.start?.count || 0;
+
+      return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
+        $pull: { 'start.userIds': userId },
+        'start.count': count > 0 ? count - 1 : 0,
+        'start.isStart': false,
+      });
+    }
+
+    const count =
+      (await this.ctx.model.MusicModel.findById(musicId))?.start?.count || 0;
+
+    return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
+      $addToSet: { 'start.userIds': userId },
+      'start.count': count + 1,
+      'start.isStart': true,
+    });
+  }
+
   async addMessage(id: string, userId: string, content: string) {
     return this.ctx.model.MusicModel.findByIdAndUpdate(id, {
       $push: {

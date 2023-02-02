@@ -6,6 +6,7 @@ import ExportArticleModel from '../../../app/model/ArticleModel';
 import ExportBannerModel from '../../../app/model/BannerModel';
 import ExportMessageBoardModel from '../../../app/model/MessageBoardModel';
 import ExportMusicModel from '../../../app/model/MusicModel';
+import ExportStageModel from '../../../app/model/StageModel';
 import ExportUserModel from '../../../app/model/UserModel';
 
 declare module 'egg' {
@@ -14,6 +15,7 @@ declare module 'egg' {
     BannerModel: ReturnType<typeof ExportBannerModel>;
     MessageBoardModel: ReturnType<typeof ExportMessageBoardModel>;
     MusicModel: ReturnType<typeof ExportMusicModel>;
+    StageModel: ReturnType<typeof ExportStageModel>;
     UserModel: ReturnType<typeof ExportUserModel>;
   }
 }

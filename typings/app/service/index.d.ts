@@ -10,7 +10,7 @@ import ExportArticleService from '../../../app/service/ArticleService';
 import ExportBannerService from '../../../app/service/BannerService';
 import ExportMessageBoardService from '../../../app/service/MessageBoardService';
 import ExportMusicService from '../../../app/service/MusicService';
-import ExportStageService from '../../../app/service/StageService';
+import ExportOpusService from '../../../app/service/OpusService';
 import ExportTest from '../../../app/service/Test';
 import ExportUserService from '../../../app/service/UserService';
 
@@ -20,7 +20,7 @@ declare module 'egg' {
     bannerService: AutoInstanceType<typeof ExportBannerService>;
     messageBoardService: AutoInstanceType<typeof ExportMessageBoardService>;
     musicService: AutoInstanceType<typeof ExportMusicService>;
-    stageService: AutoInstanceType<typeof ExportStageService>;
+    opusService: AutoInstanceType<typeof ExportOpusService>;
     test: AutoInstanceType<typeof ExportTest>;
     userService: AutoInstanceType<typeof ExportUserService>;
   }

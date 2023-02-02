@@ -1,14 +1,14 @@
-import { StageTypeEnum } from '../typings/stage';
+import { OpusTypeEnum } from '../typings/opus';
 import BaseController from './baseController';
 
-const stageValidate = (action: 'update' | 'create' = 'create') => {
+const opusValidate = (action: 'update' | 'create' = 'create') => {
   const required = action === 'create';
 
   return {
     name: { type: 'string', required },
     type: {
       type: 'enum',
-      values: Object.keys(StageTypeEnum),
+      values: Object.keys(OpusTypeEnum),
       required,
     },
     cover: { type: 'string', required },
@@ -18,8 +18,8 @@ const stageValidate = (action: 'update' | 'create' = 'create') => {
   };
 };
 
-export default class StageController extends BaseController {
-  async findStageList() {
+export default class OpusController extends BaseController {
+  async findOpusList() {
     const { ctx, service } = this;
 
     const page = this.getPage(ctx.request.query);
@@ -31,10 +31,10 @@ export default class StageController extends BaseController {
     };
   }
 
-  async createStage() {
+  async createOpus() {
     const { ctx, service } = this;
 
-    ctx.validate(stageValidate(), ctx.request.body);
+    ctx.validate(opusValidate(), ctx.request.body);
 
     ctx.body = {
       success: true,
@@ -42,13 +42,13 @@ export default class StageController extends BaseController {
     };
   }
 
-  async updateStage() {
+  async updateOpus() {
     const { ctx, service } = this;
 
     ctx.validate(
       {
         id: { type: 'string', require: true },
-        ...stageValidate('update'),
+        ...opusValidate('update'),
       },
       ctx.request.body,
     );
@@ -62,7 +62,7 @@ export default class StageController extends BaseController {
     };
   }
 
-  async deleteStage() {
+  async deleteOpus() {
     const { ctx, service } = this;
 
     ctx.validate({ id: { type: 'string', required: true } }, ctx.request.query);

@@ -27,7 +27,7 @@ export default class OpusController extends BaseController {
 
     ctx.body = {
       success: true,
-      ...(await service.stageService.findList(filter, page)),
+      ...(await service.opusService.findList(filter, page)),
     };
   }
 
@@ -38,7 +38,7 @@ export default class OpusController extends BaseController {
 
     ctx.body = {
       success: true,
-      data: await service.stageService.create(ctx.request.body),
+      data: await service.opusService.create(ctx.request.body),
     };
   }
 
@@ -55,7 +55,7 @@ export default class OpusController extends BaseController {
 
     ctx.body = {
       success: true,
-      data: await service.stageService.update(
+      data: await service.opusService.update(
         ctx.request.body.id,
         ctx.request.body,
       ),
@@ -69,7 +69,7 @@ export default class OpusController extends BaseController {
 
     ctx.body = {
       success: true,
-      data: await service.stageService.delete(ctx.request.query.id),
+      data: await service.opusService.delete(ctx.request.query.id),
     };
   }
 }

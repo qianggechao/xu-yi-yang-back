@@ -52,6 +52,12 @@ export default class MusicService extends Service {
     });
   }
 
+  async deleteChildren(musicId: string, childrenId: string) {
+    return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
+      $pull: { children: { _id: childrenId } },
+    });
+  }
+
   async setLike(id: string, userId: string) {
     const music = await this.ctx.model.MusicModel.findOne({
       _id: id,

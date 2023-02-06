@@ -106,6 +106,27 @@ export default class MusicController extends BaseController {
     };
   }
 
+  async deleteMusicChildren() {
+    const { ctx, service } = this;
+    const query = ctx.request.query;
+
+    ctx.validate(
+      {
+        musicId: { type: 'string', required: true },
+        childrenId: { type: 'string', required: true },
+      },
+      query,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.musicService.deleteChildren(
+        query.musicId,
+        query.childrenId,
+      ),
+    };
+  }
+
   async setMusicLike() {
     const { ctx, service } = this;
 

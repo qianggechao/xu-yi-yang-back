@@ -47,4 +47,8 @@ export default (app: Application) => {
     '/admin/music/deleteMusicMessage',
     controller.musicController.deleteMusicMessage,
   );
+  router.delete(
+    '/admin/music/deleteMusicChildren',
+    controller.musicController.deleteMusicChildren,
+  );
 };

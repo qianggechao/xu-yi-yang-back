@@ -1,6 +1,6 @@
 import { Service } from 'egg';
 import { MusicType, MusicTypeEnum } from '../typings/music';
-import { FilterQuery, UpdateQuery } from 'mongoose';
+import { FilterQuery, UpdateQuery, Types } from 'mongoose';
 import { Page } from '../typings';
 
 type FilterMusic = {
@@ -9,16 +9,41 @@ type FilterMusic = {
 };
 
 export default class MusicService extends Service {
+  objectIdIncludes(id: string, ids: string[]) {
+    return ids.some((item) => Types.ObjectId(item).equals(Types.ObjectId(id)));
+  }
+
   async findList(filter?: FilterQuery<FilterMusic>, page?: Page) {
+    const userId = this.ctx.state.user._id;
     const { currentPage = 1, pageSize = 10 } = page ?? {};
-    const data = await this.ctx.model.MusicModel.find(filter ?? {})
+
+    const musics = await this.ctx.model.MusicModel.find(filter ?? {})
       .limit(pageSize)
       .skip(pageSize * (currentPage - 1))
-      .populate('message.data.user like.userIds', { password: 0 });
+      .populate('message.data.user like.userIds', { password: 0 })
+      .lean();
 
     const total = await this.ctx.model.MusicModel.find(
       filter ?? {},
     ).countDocuments();
+
+    const data = musics.map((item) => {
+      const { start, like } = item;
+
+      return {
+        ...item,
+        start: {
+          ...start,
+          isStart: start?.userIds?.some((item) => item?.equals(userId)),
+        },
+        like: {
+          ...like,
+          isLike: like?.userIds?.some(
+            (item) => item?.equals && item?.equals(userId),
+          ),
+        },
+      };
+    });
 
     return {
       data,
@@ -84,6 +109,16 @@ export default class MusicService extends Service {
     });
   }
 
+  async setManyLike(musicId: string, userIds: string[]) {
+    const unqUsers = Array.from(new Set(userIds));
+    const userId = this.ctx.state.user._id;
+    const isLike = this.objectIdIncludes(userId, userIds);
+
+    return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
+      $set: { like: { userIds: unqUsers, count: unqUsers.length, isLike } },
+    });
+  }
+
   async setStart(musicId: string, userId: string) {
     const music = await this.ctx.model.MusicModel.findOne({
       _id: musicId,
@@ -107,6 +142,18 @@ export default class MusicService extends Service {
       $addToSet: { 'start.userIds': userId },
       'start.count': count + 1,
       'start.isStart': true,
+    });
+  }
+
+  async setManyStart(musicId: string, userIds: string[]) {
+    const unqUsers = Array.from(new Set(userIds));
+    const userId = this.ctx.state.user._id;
+    const isStart = this.objectIdIncludes(userId, userIds);
+
+    return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
+      $set: {
+        start: { userIds: unqUsers, count: unqUsers.length, isStart },
+      },
     });
   }
 
@@ -137,5 +184,14 @@ export default class MusicService extends Service {
       },
       { $pull: { 'message.data': { _id: messageId } } },
     ).populate('message.data.user like.userIds', { password: 0 });
+  }
+
+  async setManyMessage(
+    musicId: string,
+    messages: { user: string; content: string }[],
+  ) {
+    return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
+      $set: { message: { data: messages, count: messages.length } },
+    });
   }
 }

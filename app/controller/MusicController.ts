@@ -129,21 +129,37 @@ export default class MusicController extends BaseController {
 
   async setMusicLike() {
     const { ctx, service } = this;
+    const body = ctx.request.body;
 
     ctx.validate(
       {
         userId: { type: 'string', required: true },
         musicId: { type: 'string', required: true },
       },
-      ctx.request.body,
+      body,
     );
 
     ctx.body = {
       success: true,
-      data: await service.musicService.setLike(
-        ctx.request.body.musicId,
-        ctx.request.body.userId,
-      ),
+      data: await service.musicService.setLike(body.musicId, body.userId),
+    };
+  }
+
+  async setMusicManyLike() {
+    const { ctx, service } = this;
+    const body = ctx.request.body;
+
+    ctx.validate(
+      {
+        userIds: { type: 'array', required: true },
+        musicId: { type: 'string', required: true },
+      },
+      body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.musicService.setManyLike(body.musicId, body.userIds),
     };
   }
 
@@ -208,6 +224,24 @@ export default class MusicController extends BaseController {
     };
   }
 
+  async setMusicManyMessage() {
+    const { ctx, service } = this;
+
+    ctx.validate(
+      {
+        musicId: { type: 'string', required: true },
+        messages: { type: 'array', required: true },
+      },
+      ctx.request.body,
+    );
+
+    const { messages, musicId } = ctx.request.body;
+    ctx.body = {
+      success: true,
+      data: await service.musicService.setManyMessage(musicId, messages),
+    };
+  }
+
   async setMusicStart() {
     const { ctx, service } = this;
 
@@ -223,6 +257,24 @@ export default class MusicController extends BaseController {
     ctx.body = {
       success: true,
       data: await service.musicService.setStart(musicId, userId),
+    };
+  }
+
+  async setMusicManyStart() {
+    const { ctx, service } = this;
+
+    ctx.validate(
+      {
+        userIds: { type: 'array', required: true },
+        musicId: { type: 'string', required: true },
+      },
+      ctx.request.body,
+    );
+
+    const { userIds, musicId } = ctx.request.body;
+    ctx.body = {
+      success: true,
+      data: await service.musicService.setManyStart(musicId, userIds),
     };
   }
 }

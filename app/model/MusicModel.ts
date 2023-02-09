@@ -14,6 +14,14 @@ const MusicModel = (app: Application) => {
     },
     url: { type: String, require: true },
     description: String,
+    author: String,
+    tag: [
+      {
+        _id: { type: mongoose.Types.ObjectId, auto: true },
+        color: { type: String, require: true },
+        text: { type: String, unique: true, require: true },
+      },
+    ],
     link: String,
     lyric: String,
     cover: String,

@@ -27,6 +27,10 @@ export default (app: Application) => {
     controller.musicController.setMusicLike,
   );
   router.post(
+    '/admin/music/setMusicManyLike',
+    controller.musicController.setMusicManyLike,
+  );
+  router.post(
     '/admin/music/addMusicMessage',
     controller.musicController.addMusicMessage,
   );
@@ -35,8 +39,16 @@ export default (app: Application) => {
     controller.musicController.updateMusicMessage,
   );
   router.post(
+    '/admin/music/setMusicManyMessage',
+    controller.musicController.setMusicManyMessage,
+  );
+  router.post(
     '/admin/music/setMusicStart',
     controller.musicController.setMusicStart,
+  );
+  router.post(
+    '/admin/music/setMusicManyStart',
+    controller.musicController.setMusicManyStart,
   );
 
   router.delete(

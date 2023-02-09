@@ -15,17 +15,19 @@ export default () => {
     ctx.request.query = filterEmptyObject(query);
 
     try {
+      const { id } = ((await ctx.app.jwt.verify(
+        token as string,
+        ctx.app.config.jwt.secret,
+      )) || {}) as Record<string, any>;
+      const existUser = await ctx.service.userService.findById(id);
+
       if (/^\/public\//.test(url)) {
+        ctx.state.user = existUser ?? {};
+
         await next();
       } else {
+        // 有 token 需要校验
         if (token) {
-          // 有 token 需要校验
-          const { id } = ((await ctx.app.jwt.verify(
-            token as string,
-            ctx.app.config.jwt.secret,
-          )) || {}) as Record<string, any>;
-
-          const existUser = await ctx.service.userService.findById(id);
           ctx.state.user = existUser ?? {};
 
           if (/^\/admin\//.test(url)) {

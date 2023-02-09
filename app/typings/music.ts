@@ -1,5 +1,6 @@
 import { BaseDocument } from '.';
 import { UserType } from './user';
+import { Types } from 'mongoose';
 
 export enum MusicTypeEnum {
   album = '专辑',
@@ -21,12 +22,12 @@ export interface MusicType extends BaseDocument {
   start?: {
     count: number;
     isStart: boolean;
-    userIds: string[];
+    userIds: Types.ObjectId[];
   };
   like?: {
     count: number;
     isLike: boolean;
-    userIds: string[];
+    userIds: Types.ObjectId[];
   };
   message?: {
     count: number;

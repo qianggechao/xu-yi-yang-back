@@ -15,11 +15,12 @@ export default () => {
     ctx.request.query = filterEmptyObject(query);
 
     try {
-      const { id } = ((await ctx.app.jwt.verify(
-        token as string,
-        ctx.app.config.jwt.secret,
-      )) || {}) as Record<string, any>;
-      const existUser = await ctx.service.userService.findById(id);
+      const user = token
+        ? ((ctx.app.jwt.verify(token as string, ctx.app.config.jwt.secret) ||
+            {}) as Record<string, any>)
+        : {};
+
+      const existUser = await ctx.service.userService.findById(user?.id);
 
       if (/^\/public\//.test(url)) {
         ctx.state.user = existUser ?? {};

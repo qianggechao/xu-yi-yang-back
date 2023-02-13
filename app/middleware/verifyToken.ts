@@ -17,7 +17,7 @@ export default () => {
     try {
       const user = token
         ? ((ctx.app.jwt.verify(token as string, ctx.app.config.jwt.secret) ||
-            {}) as Record<string, any>)
+            {}) as Record<string, string | any>)
         : {};
 
       const existUser = await ctx.service.userService.findById(user?.id);

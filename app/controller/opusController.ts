@@ -72,4 +72,164 @@ export default class OpusController extends BaseController {
       data: await service.opusService.delete(ctx.request.query.id),
     };
   }
+
+  async setOpusStar() {
+    const { ctx, service } = this;
+    const body = ctx.request.body;
+
+    ctx.validate(
+      {
+        opusId: { type: 'string', required: true },
+        userId: { type: 'string', required: true },
+      },
+      body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.opusService.setStar(body.opusId, body.userId),
+    };
+  }
+
+  async setManyOpusStar() {
+    const { ctx, service } = this;
+    const body = ctx.request.body;
+
+    ctx.validate(
+      {
+        opusId: { type: 'string', required: true },
+        userIds: { type: 'array', required: true },
+      },
+      body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.opusService.setManyStar(body.opusId, body.userIds),
+    };
+  }
+
+  async setOpusLike() {
+    const { ctx, service } = this;
+    const body = ctx.request.body;
+
+    ctx.validate(
+      {
+        opusId: { type: 'string', required: true },
+        userId: { type: 'string', required: true },
+      },
+      body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.opusService.setLike(body.opusId, body.userId),
+    };
+  }
+
+  async setManyOpusLike() {
+    const { ctx, service } = this;
+    const body = ctx.request.body;
+
+    ctx.validate(
+      {
+        opusId: { type: 'string', required: true },
+        userIds: { type: 'array', required: true },
+      },
+      body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.opusService.setManyLike(body.opusId, body.userIds),
+    };
+  }
+
+  async addOpusMessage() {
+    const { ctx, service } = this;
+    const body = ctx.request.body;
+
+    ctx.validate(
+      {
+        opusId: { type: 'string', required: true },
+        userId: { type: 'string', required: true },
+        content: { type: 'string', required: true },
+      },
+      body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.opusService.addMessage(
+        body.opusId,
+        body.userId,
+        body.content,
+      ),
+    };
+  }
+
+  async updateOpusMessage() {
+    const { ctx, service } = this;
+    const body = ctx.request.body;
+
+    ctx.validate(
+      {
+        opusId: { type: 'string', required: true },
+        messageId: { type: 'string', required: true },
+        content: { type: 'string', required: true },
+      },
+      body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.opusService.updateMessage(
+        body.opusId,
+        body.messageId,
+        body.content,
+      ),
+    };
+  }
+
+  async deleteOpusMessage() {
+    const { ctx, service } = this;
+    const query = ctx.request.query;
+
+    ctx.validate(
+      {
+        opusId: { type: 'string', required: true },
+        messageId: { type: 'string', required: true },
+      },
+      query,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.opusService.deleteMessage(
+        query.opusId,
+        query.messageId,
+      ),
+    };
+  }
+
+  async setManyOpusMessage() {
+    const { ctx, service } = this;
+    const body = ctx.request.body;
+
+    ctx.validate(
+      {
+        opusId: { type: 'string', required: true },
+        messages: { type: 'array', required: true },
+      },
+      body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.opusService.setManyMessage(
+        body.opusId,
+        body.messages,
+      ),
+    };
+  }
 }

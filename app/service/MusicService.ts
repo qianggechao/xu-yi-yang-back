@@ -28,13 +28,13 @@ export default class MusicService extends Service {
     ).countDocuments();
 
     const data = musics.map((item) => {
-      const { start, like } = item;
+      const { star, like } = item;
 
       return {
         ...item,
-        start: {
-          ...start,
-          isStart: start?.userIds?.some((item) => item?.equals(userId)),
+        star: {
+          ...star,
+          isStar: star?.userIds?.some((item) => item?.equals(userId)),
         },
         like: {
           ...like,
@@ -119,40 +119,40 @@ export default class MusicService extends Service {
     });
   }
 
-  async setStart(musicId: string, userId: string) {
+  async setStar(musicId: string, userId: string) {
     const music = await this.ctx.model.MusicModel.findOne({
       _id: musicId,
-      'start.userIds': userId,
+      'star.userIds': userId,
     });
 
     if (music) {
-      const count = music.start?.count || 0;
+      const count = music.star?.count || 0;
 
       return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
-        $pull: { 'start.userIds': userId },
-        'start.count': count > 0 ? count - 1 : 0,
-        'start.isStart': false,
+        $pull: { 'star.userIds': userId },
+        'star.count': count > 0 ? count - 1 : 0,
+        'star.isStar': false,
       });
     }
 
     const count =
-      (await this.ctx.model.MusicModel.findById(musicId))?.start?.count || 0;
+      (await this.ctx.model.MusicModel.findById(musicId))?.star?.count || 0;
 
     return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
-      $addToSet: { 'start.userIds': userId },
-      'start.count': count + 1,
-      'start.isStart': true,
+      $addToSet: { 'star.userIds': userId },
+      'star.count': count + 1,
+      'star.isStar': true,
     });
   }
 
-  async setManyStart(musicId: string, userIds: string[]) {
+  async setManyStar(musicId: string, userIds: string[]) {
     const unqUsers = Array.from(new Set(userIds));
     const userId = this.ctx.state.user._id;
-    const isStart = this.objectIdIncludes(userId, userIds);
+    const isStar = this.objectIdIncludes(userId, userIds);
 
     return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
       $set: {
-        start: { userIds: unqUsers, count: unqUsers.length, isStart },
+        star: { userIds: unqUsers, count: unqUsers.length, isStar },
       },
     });
   }

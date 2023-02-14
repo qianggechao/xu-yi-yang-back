@@ -256,7 +256,7 @@ export default class MusicController extends BaseController {
     const { userId, musicId } = ctx.request.body;
     ctx.body = {
       success: true,
-      data: await service.musicService.setStart(musicId, userId),
+      data: await service.musicService.setStar(musicId, userId),
     };
   }
 
@@ -274,7 +274,7 @@ export default class MusicController extends BaseController {
     const { userIds, musicId } = ctx.request.body;
     ctx.body = {
       success: true,
-      data: await service.musicService.setManyStart(musicId, userIds),
+      data: await service.musicService.setManyStar(musicId, userIds),
     };
   }
 }

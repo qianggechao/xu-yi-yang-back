@@ -1,4 +1,5 @@
 import { BaseDocument } from '.';
+import { UserType } from './user';
 
 export enum OpusTypeEnum {
   stage = '现场舞台',
@@ -15,4 +16,11 @@ export interface OpusType extends BaseDocument {
   url?: string;
   description?: string;
   link?: string;
+  star?: string[];
+  like?: string[];
+  messages?: {
+    _id: string;
+    user: UserType;
+    content: string;
+  }[];
 }

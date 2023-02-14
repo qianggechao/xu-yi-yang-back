@@ -19,7 +19,7 @@ export interface MusicType extends BaseDocument {
   lyric?: string;
   cover?: string;
   avatar?: string;
-  start?: {
+  star?: {
     count: number;
     isStart: boolean;
     userIds: Types.ObjectId[];

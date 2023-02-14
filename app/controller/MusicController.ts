@@ -145,7 +145,7 @@ export default class MusicController extends BaseController {
     };
   }
 
-  async setMusicManyLike() {
+  async setManyMusicLike() {
     const { ctx, service } = this;
     const body = ctx.request.body;
 
@@ -224,7 +224,7 @@ export default class MusicController extends BaseController {
     };
   }
 
-  async setMusicManyMessage() {
+  async setManyMusicMessage() {
     const { ctx, service } = this;
 
     ctx.validate(
@@ -242,7 +242,7 @@ export default class MusicController extends BaseController {
     };
   }
 
-  async setMusicStart() {
+  async setMusicStar() {
     const { ctx, service } = this;
 
     ctx.validate(
@@ -260,7 +260,7 @@ export default class MusicController extends BaseController {
     };
   }
 
-  async setMusicManyStart() {
+  async setManyMusicStar() {
     const { ctx, service } = this;
 
     ctx.validate(

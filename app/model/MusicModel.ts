@@ -26,40 +26,29 @@ const MusicModel = (app: Application) => {
     lyric: String,
     cover: String,
     avatar: String,
-    start: {
-      count: { type: Number, default: 0 },
-      isStart: { type: Boolean, default: false },
-      userIds: [
-        {
-          type: mongoose.Types.ObjectId,
-          ref: 'User',
-          require: false,
-          unique: true,
-        },
-      ],
-    },
-    like: {
-      count: { type: Number, default: 0 },
-      isLike: { type: Boolean, default: false },
-      userIds: [
-        {
-          type: mongoose.Types.ObjectId,
-          ref: 'User',
-          require: false,
-          unique: true,
-        },
-      ],
-    },
-    message: {
-      count: { type: Number, default: 0 },
-      data: [
-        {
-          _id: { type: mongoose.Types.ObjectId, require: true, auto: true },
-          content: { type: String, require: true },
-          user: { type: mongoose.Types.ObjectId, ref: 'User', require: true },
-        },
-      ],
-    },
+    star: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+        require: false,
+        unique: true,
+      },
+    ],
+    like: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+        require: false,
+        unique: true,
+      },
+    ],
+    messages: [
+      {
+        _id: { type: mongoose.Types.ObjectId, require: true, auto: true },
+        content: { type: String, require: true },
+        user: { type: mongoose.Types.ObjectId, ref: 'User', require: true },
+      },
+    ],
   };
 
   const MusicSchema = new Schema(

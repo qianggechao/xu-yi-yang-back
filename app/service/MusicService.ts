@@ -14,36 +14,17 @@ export default class MusicService extends Service {
   }
 
   async findList(filter?: FilterQuery<FilterMusic>, page?: Page) {
-    const userId = this.ctx.state.user._id;
     const { currentPage = 1, pageSize = 10 } = page ?? {};
 
-    const musics = await this.ctx.model.MusicModel.find(filter ?? {})
+    const data = await this.ctx.model.MusicModel.find(filter ?? {})
       .limit(pageSize)
       .skip(pageSize * (currentPage - 1))
-      .populate('message.data.user like.userIds', { password: 0 })
+      .populate('message.user', { password: 0 })
       .lean();
 
     const total = await this.ctx.model.MusicModel.find(
       filter ?? {},
     ).countDocuments();
-
-    const data = musics.map((item) => {
-      const { star, like } = item;
-
-      return {
-        ...item,
-        star: {
-          ...star,
-          isStar: star?.userIds?.some((item) => item?.equals(userId)),
-        },
-        like: {
-          ...like,
-          isLike: like?.userIds?.some(
-            (item) => item?.equals && item?.equals(userId),
-          ),
-        },
-      };
-    });
 
     return {
       data,
@@ -83,107 +64,61 @@ export default class MusicService extends Service {
     });
   }
 
-  async setLike(id: string, userId: string) {
-    const music = await this.ctx.model.MusicModel.findOne({
-      _id: id,
-      'like.userIds': userId,
-    });
-
-    if (music) {
-      const count = music.like?.count || 0;
-
-      return this.ctx.model.MusicModel.findByIdAndUpdate(id, {
-        $pull: { 'like.userIds': userId },
-        'like.count': count > 0 ? count - 1 : 0,
-        'like.isLike': false,
-      });
-    }
-
-    const count =
-      (await this.ctx.model.MusicModel.findById(id))?.like?.count || 0;
-
-    return this.ctx.model.MusicModel.findByIdAndUpdate(id, {
-      $addToSet: { 'like.userIds': userId },
-      'like.count': count + 1,
-      'like.isLike': true,
-    });
-  }
-
-  async setManyLike(musicId: string, userIds: string[]) {
-    const unqUsers = Array.from(new Set(userIds));
-    const userId = this.ctx.state.user._id;
-    const isLike = this.objectIdIncludes(userId, userIds);
-
-    return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
-      $set: { like: { userIds: unqUsers, count: unqUsers.length, isLike } },
-    });
-  }
-
   async setStar(musicId: string, userId: string) {
-    const music = await this.ctx.model.MusicModel.findOne({
+    const isStar = await this.ctx.model.MusicModel.findOne({
       _id: musicId,
-      'star.userIds': userId,
+      star: userId,
     });
 
-    if (music) {
-      const count = music.star?.count || 0;
-
-      return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
-        $pull: { 'star.userIds': userId },
-        'star.count': count > 0 ? count - 1 : 0,
-        'star.isStar': false,
-      });
-    }
-
-    const count =
-      (await this.ctx.model.MusicModel.findById(musicId))?.star?.count || 0;
-
     return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
-      $addToSet: { 'star.userIds': userId },
-      'star.count': count + 1,
-      'star.isStar': true,
+      [isStar ? '$pull' : '$push']: { star: userId },
     });
   }
 
   async setManyStar(musicId: string, userIds: string[]) {
-    const unqUsers = Array.from(new Set(userIds));
-    const userId = this.ctx.state.user._id;
-    const isStar = this.objectIdIncludes(userId, userIds);
+    return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
+      $set: { star: userIds },
+    });
+  }
+
+  async setLike(musicId: string, userId: string) {
+    const isLike = await this.ctx.model.MusicModel.findOne({
+      _id: musicId,
+      like: userId,
+    });
 
     return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
-      $set: {
-        star: { userIds: unqUsers, count: unqUsers.length, isStar },
+      [isLike ? '$pull' : '$push']: { like: userId },
+    });
+  }
+
+  async setManyLike(musicId: string, userIds: string[]) {
+    return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
+      $set: { like: userIds },
+    });
+  }
+
+  async addMessage(musicId: string, userId: string, content: string) {
+    return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
+      $push: {
+        messages: { content, user: userId },
       },
     });
   }
 
-  async addMessage(id: string, userId: string, content: string) {
-    return this.ctx.model.MusicModel.findByIdAndUpdate(id, {
-      $push: {
-        'message.data': { content, user: userId },
-      },
-      'message.count': 1,
-    }).populate('message.data.user like.userIds', { password: 0 });
-  }
-
   async updateMessage(musicId: string, messageId: string, content: string) {
     return this.ctx.model.MusicModel.findOneAndUpdate(
-      {
-        _id: musicId,
-        'message.data._id': messageId,
-      },
-      { $set: { 'message.data.$.content': content } },
-    ).populate('message.data.user like.userIds', { password: 0 });
+      { _id: musicId, 'messages._id': messageId },
+      { $set: { 'messages.$.content': content } },
+    );
   }
 
   async deleteMessage(musicId: string, messageId: string) {
-    return this.ctx.model.MusicModel.findOneAndUpdate(
-      {
-        _id: musicId,
-        'message.data._id': messageId,
+    return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
+      $pull: {
+        messages: { _id: messageId },
       },
-      { $pull: { 'message.data': { _id: messageId } } },
-    ).populate('message.data.user like.userIds', { password: 0 });
+    });
   }
 
   async setManyMessage(
@@ -191,7 +126,7 @@ export default class MusicService extends Service {
     messages: { user: string; content: string }[],
   ) {
     return this.ctx.model.MusicModel.findByIdAndUpdate(musicId, {
-      $set: { message: { data: messages, count: messages.length } },
+      $set: { messages },
     });
   }
 }

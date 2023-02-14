@@ -8,7 +8,9 @@ export default class OpusService extends Service {
     const { currentPage = 1, pageSize = 10 } = page ?? {};
     const data = await this.ctx.model.OpusModel.find(filter ?? {})
       .limit(pageSize)
-      .skip(pageSize * (currentPage - 1));
+      .skip(pageSize * (currentPage - 1))
+      .populate('message.user', { password: 0 })
+      .lean();
 
     const total = await this.ctx.model.OpusModel.find(
       filter ?? {},

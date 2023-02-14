@@ -1,66 +1,53 @@
 import { Application } from 'egg';
 
 export default (app: Application) => {
-  const { controller, router } = app;
+  const {
+    controller: { musicController },
+    router,
+  } = app;
 
-  router.get('/public/music/musicList', controller.musicController.musicList);
+  router.get('/public/music/musicList', musicController.musicList);
 
-  router.post(
-    '/admin/music/createMusic',
-    controller.musicController.createMusic,
-  );
-  router.post(
-    '/admin/music/updateMusic',
-    controller.musicController.updateMusic,
-  );
+  router.post('/admin/music/createMusic', musicController.createMusic);
+  router.post('/admin/music/updateMusic', musicController.updateMusic);
+  router.delete('/admin/music/deleteMusic', musicController.deleteMusic);
 
   router.post(
     '/admin/music/addMusicChildren',
-    controller.musicController.addMusicChildren,
+    musicController.addMusicChildren,
   );
   router.post(
     '/admin/music/updateMusicChildren',
-    controller.musicController.updateMusicChildren,
-  );
-  router.post(
-    '/admin/music/setMusicLike',
-    controller.musicController.setMusicLike,
-  );
-  router.post(
-    '/admin/music/setMusicManyLike',
-    controller.musicController.setMusicManyLike,
-  );
-  router.post(
-    '/admin/music/addMusicMessage',
-    controller.musicController.addMusicMessage,
-  );
-  router.post(
-    '/admin/music/updateMusicMessage',
-    controller.musicController.updateMusicMessage,
-  );
-  router.post(
-    '/admin/music/setMusicManyMessage',
-    controller.musicController.setMusicManyMessage,
-  );
-  router.post(
-    '/admin/music/setMusicStart',
-    controller.musicController.setMusicStart,
-  );
-  router.post(
-    '/admin/music/setMusicManyStart',
-    controller.musicController.setMusicManyStart,
-  );
-
-  router.delete(
-    '/admin/music/deleteMusic',
-    controller.musicController.deleteMusic,
-  );
-  router.delete(
-    '/admin/music/deleteMusicMessage',
-    controller.musicController.deleteMusicMessage,
+    musicController.updateMusicChildren,
   );
   router.delete(
     '/admin/music/deleteMusicChildren',
-    controller.musicController.deleteMusicChildren,
+    musicController.deleteMusicChildren,
+  );
+
+  router.post('/admin/music/setMusicLike', musicController.setMusicLike);
+  router.post(
+    '/admin/music/setManyMusicLike',
+    musicController.setManyMusicLike,
+  );
+
+  router.post('/admin/music/addMusicMessage', musicController.addMusicMessage);
+  router.post(
+    '/admin/music/updateMusicMessage',
+    musicController.updateMusicMessage,
+  );
+  router.post(
+    '/admin/music/setManyMusicMessage',
+    musicController.setManyMusicMessage,
+  );
+  router.delete(
+    '/admin/music/deleteMusicMessage',
+    musicController.deleteMusicMessage,
+  );
+
+  router.post('/admin/music/setMusicStar', musicController.setMusicStar);
+  router.post(
+    '/admin/music/setManyMusicStar',
+    musicController.setManyMusicStar,
   );
 };

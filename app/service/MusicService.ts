@@ -19,7 +19,7 @@ export default class MusicService extends Service {
     const data = await this.ctx.model.MusicModel.find(filter ?? {})
       .limit(pageSize)
       .skip(pageSize * (currentPage - 1))
-      .populate('message.user', { password: 0 })
+      .populate('messages.user', { password: 0 })
       .lean();
 
     const total = await this.ctx.model.MusicModel.find(

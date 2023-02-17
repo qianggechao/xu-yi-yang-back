@@ -5,6 +5,7 @@ import 'egg';
 import ExportArticleController from '../../../app/controller/articleController';
 import ExportBannerController from '../../../app/controller/bannerController';
 import ExportBaseController from '../../../app/controller/baseController';
+import ExportConfigController from '../../../app/controller/configController';
 import ExportHome from '../../../app/controller/home';
 import ExportMessageBoardController from '../../../app/controller/messageBoardController';
 import ExportMusicController from '../../../app/controller/musicController';
@@ -16,6 +17,7 @@ declare module 'egg' {
     articleController: ExportArticleController;
     bannerController: ExportBannerController;
     baseController: ExportBaseController;
+    configController: ExportConfigController;
     home: ExportHome;
     messageBoardController: ExportMessageBoardController;
     musicController: ExportMusicController;

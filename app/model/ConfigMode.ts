@@ -16,13 +16,9 @@ const ConfigMode = (app: Application) => {
       links: [
         {
           title: { type: String, required: true },
-          data: [
-            {
-              name: { type: String, required: true },
-              link: { type: String, required: true },
-              icon: String,
-            },
-          ],
+          name: { type: String, required: true },
+          link: { type: String, required: true },
+          icon: String,
         },
       ],
     },

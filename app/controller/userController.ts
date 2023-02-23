@@ -2,6 +2,7 @@ import BaseController from './baseController';
 import crypto from 'crypto';
 import { SECRET_KEY } from '../../config';
 import deleteObjectKey from '../utils/deleteObjectKey';
+import { generateCaptcha, generateNumber } from '../utils/generate';
 
 export default class UserController extends BaseController {
   public async userInfo() {
@@ -64,7 +65,7 @@ export default class UserController extends BaseController {
 
     ctx.body = {
       success: true,
-      data: await userService.useerSearch(ctx.query?.keyword ?? ''),
+      data: await userService.userSearch(ctx.query?.keyword ?? ''),
     };
   }
 
@@ -135,9 +136,7 @@ export default class UserController extends BaseController {
     const { email, password, secretKey, ...restUser } = ctx.request.body;
     const { userService } = ctx.service;
 
-    if (
-      this.encryptPassword(secretKey) !== '43aa747e79cefe7141fdc69339bdbb9f'
-    ) {
+    if (secretKey !== process.env.MONGO_PASSWORD) {
       ctx.body = {
         data: null,
         msg: '密钥错误',
@@ -275,5 +274,59 @@ export default class UserController extends BaseController {
       success: true,
       data: await userService.update(ctx.request.body.id, body),
     };
+  }
+
+  getRegisterCaptcha() {
+    const { ctx } = this;
+
+    ctx.body = {
+      success: true,
+      data: generateCaptcha(4),
+    };
+  }
+
+  getUpdatePasswordCaptcha() {
+    const { ctx } = this;
+    const captcha = generateCaptcha(4);
+
+    ctx.state.captcha = captcha;
+
+    ctx.body = {
+      success: true,
+      data: captcha,
+    };
+  }
+
+  async sendUpdatePasswordEmailCaptcha() {
+    const { ctx, service } = this;
+    const { body } = ctx.request;
+
+    ctx.validate(
+      {
+        email: { type: 'email', required: true },
+        captcha: { type: 'string', required: true },
+      },
+      body,
+    );
+
+    const user = await service.userService.findUserByEmail(body.email);
+
+    if (user) {
+      ctx.body = {
+        success: true,
+        data: await service.emailService.sendEmailCaptcha(
+          body.email,
+          user.nickName,
+          generateNumber(4),
+        ),
+        msg: '发送成功',
+      };
+    } else {
+      ctx.body = {
+        success: false,
+        data: null,
+        msg: '邮箱错误，该邮箱未被注册',
+      };
+    }
   }
 }

@@ -31,7 +31,7 @@ export default class UserService extends Service {
     return this.ctx.model.UserModel.find(filter || {});
   }
 
-  public async useerSearch(keyword: string): Promise<UserType[]> {
+  public async userSearch(keyword: string): Promise<UserType[]> {
     return this.ctx.model.UserModel.find({
       $or: [{ nickName: { $regex: keyword } }, { email: { $regex: keyword } }],
     });
@@ -52,7 +52,8 @@ export default class UserService extends Service {
 
     const data = await this.ctx.model.UserModel.find(filter ?? {})
       .limit(pageSize)
-      .skip(pageSize * (currentPage - 1));
+      .skip(pageSize * (currentPage - 1))
+      .lean();
 
     const total = await this.ctx.model.UserModel.find(
       filter ?? {},

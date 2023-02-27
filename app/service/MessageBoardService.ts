@@ -49,6 +49,9 @@ export default class MessageBoardService extends Service {
   }) {
     const { userId, ...rest } = message;
     const user = await this.service.userService.findById(userId);
+    if (!user) {
+      this.ctx.throw('user not find');
+    }
 
     return this.ctx.model.MessageBoardModel.create({ ...rest, user });
   }

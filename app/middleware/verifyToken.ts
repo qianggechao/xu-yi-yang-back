@@ -24,44 +24,24 @@ export default () => {
 
       if (/^\/public\//.test(url)) {
         await next();
-      } else {
-        // 有 token 需要校验
-        if (token) {
-          if (/^\/admin\//.test(url)) {
-            if (
-              existUser?.type === 'admin' ||
-              existUser?.type === 'superAdmin'
-            ) {
-              await next();
-            } else {
-              ctx.body = {
-                success: false,
-                msg: 'You not the administrator',
-                status: 403,
-              };
-            }
-          } else {
-            if (existUser) {
-              await next();
-            } else {
-              ctx.body = {
-                success: false,
-                msg: 'have no right',
-                status: 403,
-              };
-            }
-          }
-        } else {
-          // token 不存在
-          ctx.body = {
-            status: 403,
-            msg: 'token不存在',
-          };
+      }
+
+      if (/^\/admin\//.test(url)) {
+        if (!existUser || !token) {
+          ctx.throw(403, 'token 不存在');
         }
+
+        if (!['admin', 'superAdmin'].includes(existUser?.type)) {
+          ctx.throw(403, 'You not the administrator');
+        }
+
+        await next();
+      }
+
+      if (!existUser) {
+        ctx.throw(401, '未登陆');
       }
     } catch (error: any) {
-      console.error('error', error);
-
       ctx.body = getErrorInfo(error);
     }
   };

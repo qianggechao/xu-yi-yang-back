@@ -54,9 +54,9 @@ export default class EmailService extends Service {
         <div>`,
       });
 
-      return 'send success';
+      return 'ok';
     } catch (e) {
-      return e;
+      this.ctx.throw('邮箱验证码发送失败');
     }
   }
 }

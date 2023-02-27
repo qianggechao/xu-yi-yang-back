@@ -227,22 +227,12 @@ export default class UserController extends BaseController {
   public async deleteMany() {
     const { ctx, service } = this;
 
-    try {
-      await service.userService.deleteMany();
-      ctx.body = {
-        data: [],
-        success: true,
-        msg: '',
-        error: {},
-      };
-    } catch (error) {
-      ctx.body = {
-        success: false,
-        data: null,
-        error,
-        msg: 'deleteMany user error',
-      };
-    }
+    await service.userService.deleteMany();
+
+    ctx.body = {
+      data: [],
+      success: true,
+    };
   }
 
   async delete() {
@@ -302,8 +292,6 @@ export default class UserController extends BaseController {
     ctx.session.captcha = text;
     ctx.session.maxAge = ms('60m');
 
-    console.log('getSvgCaptcha', ctx.session.captcha);
-
     ctx.response.type = 'image/svg+xml';
     ctx.body = data;
   }
@@ -322,12 +310,7 @@ export default class UserController extends BaseController {
 
     const isCheck = this.checkCaptcha(body.captcha);
     if (!isCheck) {
-      ctx.body = {
-        success: false,
-        data: null,
-        msg: '图形验证码错误',
-      };
-      return;
+      ctx.throw(400, '验证码错误');
     }
 
     const user = await service.userService.findUserByEmail(body.email);

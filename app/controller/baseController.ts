@@ -50,4 +50,8 @@ export default class BaseController extends Controller {
 
     return copyQuery;
   }
+
+  checkCaptcha(captcha: string) {
+    return this.ctx.session.captcha?.toLowerCase() === captcha.toLowerCase();
+  }
 }

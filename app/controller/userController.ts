@@ -3,6 +3,9 @@ import crypto from 'crypto';
 import { SECRET_KEY } from '../../config';
 import deleteObjectKey from '../utils/deleteObjectKey';
 import { generateCaptcha, generateNumber } from '../utils/generate';
+import svgCaptcha from 'svg-captcha';
+import ms from 'ms';
+// import s from 'serve-static';
 
 export default class UserController extends BaseController {
   public async userInfo() {
@@ -202,6 +205,9 @@ export default class UserController extends BaseController {
         { expiresIn: '48h' },
       );
 
+      ctx.session.user = existUser;
+      ctx.session.maxAge = ms('2d');
+
       ctx.body = {
         token,
         success: true,
@@ -278,23 +284,28 @@ export default class UserController extends BaseController {
 
   getRegisterCaptcha() {
     const { ctx } = this;
-
-    ctx.body = {
-      success: true,
-      data: generateCaptcha(4),
-    };
-  }
-
-  getUpdatePasswordCaptcha() {
-    const { ctx } = this;
     const captcha = generateCaptcha(4);
 
-    ctx.state.captcha = captcha;
+    ctx.session.captcha = captcha;
+    ctx.session.maxAge = ms('60m');
 
     ctx.body = {
       success: true,
       data: captcha,
     };
+  }
+
+  async getSvgCaptcha() {
+    const { ctx } = this;
+    const { data, text } = svgCaptcha.create();
+
+    ctx.session.captcha = text;
+    ctx.session.maxAge = ms('60m');
+
+    console.log('getSvgCaptcha', ctx.session.captcha);
+
+    ctx.response.type = 'image/svg+xml';
+    ctx.body = data;
   }
 
   async sendUpdatePasswordEmailCaptcha() {
@@ -309,15 +320,27 @@ export default class UserController extends BaseController {
       body,
     );
 
-    const user = await service.userService.findUserByEmail(body.email);
+    const isCheck = this.checkCaptcha(body.captcha);
+    if (!isCheck) {
+      ctx.body = {
+        success: false,
+        data: null,
+        msg: '图形验证码错误',
+      };
+      return;
+    }
 
+    const user = await service.userService.findUserByEmail(body.email);
     if (user) {
+      const captcha = generateNumber(4);
+      ctx.state.captcha = captcha;
+
       ctx.body = {
         success: true,
         data: await service.emailService.sendEmailCaptcha(
           body.email,
           user.nickName,
-          generateNumber(4),
+          captcha,
         ),
         msg: '发送成功',
       };

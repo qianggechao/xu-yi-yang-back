@@ -30,7 +30,8 @@
     "egg-mongoose": "^3.3.1",
     "egg-scripts": "^2.6.0",
     "egg-validate": "^2.0.2",
-    "nodemailer": "^6.9.1"
+    "nodemailer": "^6.9.1",
+    "svg-captcha": "^1.4.0"
   },
   "devDependencies": {
     "@eggjs/tsconfig": "^1.0.0",

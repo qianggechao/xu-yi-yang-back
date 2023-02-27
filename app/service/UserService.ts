@@ -2,6 +2,7 @@ import { UserType } from './../typings/user';
 import { Service } from 'egg';
 import { FilterQuery, UpdateQuery } from 'mongoose';
 import { Page } from '../typings';
+import { generateNumber } from '../utils/generate';
 
 export default class UserService extends Service {
   public formatUserInfo(info: UserType | null) {
@@ -40,7 +41,7 @@ export default class UserService extends Service {
   public async findOne(
     filter: FilterQuery<UserType>,
   ): Promise<UserType | null> {
-    return this.ctx.model.UserModel.findOne(filter);
+    return this.ctx.model.UserModel.findOne(filter, { password: 0 });
   }
 
   public async deleteMany() {
@@ -73,5 +74,27 @@ export default class UserService extends Service {
 
   async update(id: string, update: UpdateQuery<UserType>) {
     return this.ctx.model.UserModel.findByIdAndUpdate(id, update);
+  }
+
+  async sendUpdatePasswordEmailCaptcha(email: string) {
+    const user = await this.findUserByEmail(email);
+
+    if (user) {
+      return {
+        success: true,
+        data: await this.ctx.service.emailService.sendEmailCaptcha(
+          email,
+          user.nickName,
+          generateNumber(4),
+        ),
+        msg: '发送成功',
+      };
+    }
+
+    return {
+      success: false,
+      data: null,
+      msg: '邮箱错误，该邮箱未被注册',
+    };
   }
 }

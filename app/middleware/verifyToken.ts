@@ -23,14 +23,10 @@ export default () => {
       const existUser = await ctx.service.userService.findById(user?.id);
 
       if (/^\/public\//.test(url)) {
-        ctx.state.user = existUser ?? {};
-
         await next();
       } else {
         // 有 token 需要校验
         if (token) {
-          ctx.state.user = existUser ?? {};
-
           if (/^\/admin\//.test(url)) {
             if (
               existUser?.type === 'admin' ||

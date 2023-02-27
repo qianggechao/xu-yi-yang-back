@@ -24,10 +24,7 @@ export default (app: Application) => {
     '/public/user/getRegisterCaptcha',
     userController.getRegisterCaptcha,
   );
-  router.get(
-    '/public/user/getUpdatePasswordCaptcha',
-    userController.getUpdatePasswordCaptcha,
-  );
+  router.get('/public/user/getSvgCaptcha', userController.getSvgCaptcha);
 
   router.delete('/admin/user/deleteUser', userController.delete);
   router.post('/admin/user/updateUser', userController.update);

@@ -6,7 +6,7 @@ export default (app: Application) => {
 
   // 以 非 /public/ 访问的接口都是需要 校验 token 的
   router.post('/public/loginUser', userController.loginUser);
-  router.post('/public/createUser', userController.createUser);
+  router.post('/public/loginOut', userController.loginOut);
 
   router.post(
     '/public/user/sendUpdatePasswordEmailCaptcha',
@@ -26,6 +26,7 @@ export default (app: Application) => {
   );
   router.get('/public/user/getSvgCaptcha', userController.getSvgCaptcha);
 
+  router.post('/public/user/createUser', userController.createUser);
   router.delete('/admin/user/deleteUser', userController.delete);
   router.post('/admin/user/updateUser', userController.update);
 };

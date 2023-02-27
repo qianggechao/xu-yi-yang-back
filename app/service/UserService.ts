@@ -2,7 +2,7 @@ import { UserType } from './../typings/user';
 import { Service } from 'egg';
 import { FilterQuery, UpdateQuery } from 'mongoose';
 import { Page } from '../typings';
-import { generateNumber } from '../utils/generate';
+import ms from 'ms';
 
 export default class UserService extends Service {
   public formatUserInfo(info: UserType | null) {
@@ -76,25 +76,41 @@ export default class UserService extends Service {
     return this.ctx.model.UserModel.findByIdAndUpdate(id, update);
   }
 
-  async sendUpdatePasswordEmailCaptcha(email: string) {
-    const user = await this.findUserByEmail(email);
+  generateToken(user: UserType) {
+    const { ctx, app } = this;
+    const { email, _id } = user;
 
-    if (user) {
-      return {
-        success: true,
-        data: await this.ctx.service.emailService.sendEmailCaptcha(
-          email,
-          user.nickName,
-          generateNumber(4),
-        ),
-        msg: '发送成功',
-      };
+    const token = app.jwt.sign(
+      {
+        email,
+        id: _id,
+      },
+      app.config.jwt.secret,
+      { expiresIn: '48h' },
+    );
+
+    ctx.session.user = user;
+    ctx.session.maxAge = ms('2d');
+
+    return token;
+  }
+
+  clearUser() {
+    const { ctx, app } = this;
+    const { email, _id } = ctx.session?.user ?? {};
+
+    if (!_id) {
+      this.ctx.throw('未登陆');
     }
 
-    return {
-      success: false,
-      data: null,
-      msg: '邮箱错误，该邮箱未被注册',
-    };
+    app.jwt.sign(
+      {
+        email,
+        id: _id,
+      },
+      app.config.jwt.secret,
+      { expiresIn: '48h' },
+    );
+    ctx.session = null;
   }
 }

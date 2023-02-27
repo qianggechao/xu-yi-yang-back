@@ -196,20 +196,8 @@ export default class UserController extends BaseController {
 
     if (existUser) {
       // 生成 token 信息，然后将 token 返回给前端，前端做 localStorage 加在请求头 返回给后端（后端再做校验）
-      const token = this.app.jwt.sign(
-        {
-          email,
-          id: existUser._id,
-        },
-        this.app.config.jwt.secret,
-        { expiresIn: '48h' },
-      );
-
-      ctx.session.user = existUser;
-      ctx.session.maxAge = ms('2d');
-
       ctx.body = {
-        token,
+        token: userService.generateToken(existUser),
         success: true,
         msg: 'login success',
         data: userService.formatUserInfo(existUser),
@@ -222,6 +210,18 @@ export default class UserController extends BaseController {
         error: new Error('account or password error'),
       };
     }
+  }
+
+  public loginOut() {
+    const { ctx, service } = this;
+
+    service.userService.clearUser();
+
+    ctx.body = {
+      success: true,
+      data: 'ok',
+      msg: '退出成功',
+    };
   }
 
   public async deleteMany() {
@@ -332,15 +332,16 @@ export default class UserController extends BaseController {
 
     const user = await service.userService.findUserByEmail(body.email);
     if (user) {
-      const captcha = generateNumber(4);
-      ctx.state.captcha = captcha;
+      const emailCaptcha = generateNumber(4);
+      ctx.state.emailCaptcha = emailCaptcha;
+      ctx.session.captcha = null;
 
       ctx.body = {
         success: true,
         data: await service.emailService.sendEmailCaptcha(
           body.email,
           user.nickName,
-          captcha,
+          emailCaptcha,
         ),
         msg: '发送成功',
       };

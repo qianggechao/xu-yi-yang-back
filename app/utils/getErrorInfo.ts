@@ -12,6 +12,8 @@ const formatMsg = (errors: InvalidError[]) => {
 };
 
 const getErrorInfo = (error: any) => {
+  console.log('getErrorInfo', error);
+
   if (error?.code === 'invalid_param') {
     return {
       error,
@@ -23,8 +25,9 @@ const getErrorInfo = (error: any) => {
 
   return {
     success: false,
-    msg: 'Server error',
-    status: 501,
+    msg: error?.message || 'Server error',
+    status: error?.status || 501,
+    data: null,
     error,
   };
 };

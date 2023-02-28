@@ -59,4 +59,21 @@ export default class EmailService extends Service {
       this.ctx.throw('邮箱验证码发送失败');
     }
   }
+
+  async verifyEmailCaptcha(email: string, captcha: string) {
+    const { ctx } = this;
+
+    console.log(ctx.session.emailCaptcha);
+
+    const isCheck =
+      ctx.session.emailCaptcha?.toLowerCase() === captcha.toLowerCase();
+    if (!isCheck) {
+      throw new Error('邮箱验证码错误');
+    }
+
+    const user = await ctx.service.userService.findUserByEmail(email);
+    if (!user) {
+      throw new Error('邮箱错误');
+    }
+  }
 }

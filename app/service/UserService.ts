@@ -3,6 +3,7 @@ import { Service } from 'egg';
 import { FilterQuery, UpdateQuery } from 'mongoose';
 import { Page } from '../typings';
 import ms from 'ms';
+import { encryptPassword } from '../utils/password';
 
 export default class UserService extends Service {
   public formatUserInfo(info: UserType | null) {
@@ -76,6 +77,10 @@ export default class UserService extends Service {
     return this.ctx.model.UserModel.findByIdAndUpdate(id, update);
   }
 
+  async findByEmailAndUpdatePassword(email: string, password: string) {
+    return this.ctx.model.UserModel.updateOne({ email }, { password });
+  }
+
   generateToken(user: UserType) {
     const { ctx, app } = this;
     const { email, _id } = user;
@@ -109,8 +114,36 @@ export default class UserService extends Service {
         id: _id,
       },
       app.config.jwt.secret,
-      { expiresIn: '48h' },
+      { expiresIn: '3s' },
     );
     ctx.session = null;
+  }
+
+  async verifyPassword(args: {
+    email: string;
+    password1: string;
+    password2: string;
+  }) {
+    const { email, password1, password2 } = args;
+
+    if (password1 !== password2) {
+      throw new Error('两次密码不一致');
+    }
+
+    const user = await this.findUserByEmail(email);
+    if (!user) {
+      throw new Error('未找到该邮箱');
+    }
+
+    if (user.password === encryptPassword(password1)) {
+      throw new Error('密码不能与之前一致');
+    }
+  }
+
+  async verifyOldPassword(email: string, oldPassword: string) {
+    const user = await this.findOne({ email, password: oldPassword });
+    if (!user) {
+      throw new Error('旧密码错误');
+    }
   }
 }

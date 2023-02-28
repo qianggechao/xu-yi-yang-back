@@ -27,6 +27,15 @@ export default (app: Application) => {
   router.get('/public/user/getSvgCaptcha', userController.getSvgCaptcha);
 
   router.post('/public/user/createUser', userController.createUser);
+  router.post(
+    '/public/user/updateUserPasswordByEmailCaptcha',
+    userController.updateUserPasswordByEmailCaptcha,
+  );
+  router.post(
+    '/private/user/updateUserPassword',
+    userController.updatePassword,
+  );
+
   router.delete('/admin/user/deleteUser', userController.delete);
   router.post('/admin/user/updateUser', userController.update);
 };

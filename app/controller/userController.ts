@@ -1,11 +1,9 @@
 import BaseController from './baseController';
-import crypto from 'crypto';
-import { SECRET_KEY } from '../../config';
 import deleteObjectKey from '../utils/deleteObjectKey';
 import { generateCaptcha, generateNumber } from '../utils/generate';
 import svgCaptcha from 'svg-captcha';
 import ms from 'ms';
-// import s from 'serve-static';
+import { encryptPassword } from '../utils/password';
 
 export default class UserController extends BaseController {
   public async userInfo() {
@@ -38,15 +36,6 @@ export default class UserController extends BaseController {
           error,
         };
       });
-  }
-
-  // 对传递过来的密码进行加密
-  public encryptPassword(password: string) {
-    const md5 = crypto.createHash('md5');
-    md5.update(String(password));
-    md5.update(SECRET_KEY);
-
-    return md5.digest('hex');
   }
 
   public async userList() {
@@ -103,7 +92,7 @@ export default class UserController extends BaseController {
     await userService
       .createUser({
         email,
-        password: this.encryptPassword(password),
+        password: encryptPassword(password),
         ...restUser,
         type: 'user',
       })
@@ -163,7 +152,7 @@ export default class UserController extends BaseController {
     await userService
       .createUser({
         email,
-        password: this.encryptPassword(password),
+        password: encryptPassword(password),
         ...restUser,
         type: 'admin',
       })
@@ -190,7 +179,7 @@ export default class UserController extends BaseController {
     const { userService } = ctx.service;
 
     const existUser = await userService.findOne({
-      password: this.encryptPassword(password),
+      password: encryptPassword(password),
       email,
     });
 
@@ -316,8 +305,8 @@ export default class UserController extends BaseController {
     const user = await service.userService.findUserByEmail(body.email);
     if (user) {
       const emailCaptcha = generateNumber(4);
-      ctx.state.emailCaptcha = emailCaptcha;
-      ctx.session.captcha = null;
+      ctx.session.emailCaptcha = emailCaptcha;
+      ctx.session.maxAge = ms('60m');
 
       ctx.body = {
         success: true,
@@ -335,5 +324,74 @@ export default class UserController extends BaseController {
         msg: '邮箱错误，该邮箱未被注册',
       };
     }
+  }
+
+  async updateUserPasswordByEmailCaptcha() {
+    const { ctx, service } = this;
+    const { body } = ctx.request;
+
+    ctx.validate(
+      {
+        email: { type: 'email', required: true, max: 54 },
+        emailCaptcha: { type: 'string', required: true },
+        password1: { type: 'string', required: true, max: 18, min: 6 },
+        password2: { type: 'string', required: true, max: 18, min: 6 },
+      },
+      body,
+    );
+
+    await service.emailService.verifyEmailCaptcha(
+      body.email,
+      body.emailCaptcha,
+    );
+    await service.userService.verifyPassword(body);
+
+    ctx.body = {
+      success: true,
+      data: await service.userService.findByEmailAndUpdatePassword(
+        body.email,
+        encryptPassword(body.password1),
+      ),
+      msg: '修改成功',
+    };
+
+    this.clearCaptcha();
+  }
+
+  async updatePassword() {
+    const { ctx, service } = this;
+    const { body } = ctx.request;
+
+    ctx.validate(
+      {
+        email: { type: 'string', required: true },
+        oldPassword: { type: 'string', required: true, max: 18, min: 6 },
+        newPassword1: { type: 'string', required: true, max: 18, min: 6 },
+        newPassword2: { type: 'string', required: true, max: 18, min: 6 },
+      },
+      body,
+    );
+
+    const { email, oldPassword, newPassword1, newPassword2 } = body;
+
+    await service.userService.verifyOldPassword(
+      email,
+      encryptPassword(oldPassword),
+    );
+
+    await service.userService.verifyPassword({
+      email,
+      password1: newPassword1,
+      password2: newPassword2,
+    });
+
+    ctx.body = {
+      success: true,
+      data: await service.userService.findByEmailAndUpdatePassword(
+        email,
+        encryptPassword(newPassword1),
+      ),
+      msg: '修改成功',
+    };
   }
 }

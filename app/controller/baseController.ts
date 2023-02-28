@@ -54,4 +54,9 @@ export default class BaseController extends Controller {
   checkCaptcha(captcha: string) {
     return this.ctx.session.captcha?.toLowerCase() === captcha.toLowerCase();
   }
+
+  clearCaptcha() {
+    this.ctx.session.captcha = null;
+    this.ctx.session.emailCaptcha = null;
+  }
 }

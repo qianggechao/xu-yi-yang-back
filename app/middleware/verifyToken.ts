@@ -23,24 +23,26 @@ export default () => {
       const existUser = await ctx.service.userService.findById(user?.id);
 
       if (/^\/public\//.test(url)) {
-        await next();
+        return await next();
       }
 
       if (/^\/admin\//.test(url)) {
         if (!existUser || !token) {
-          ctx.throw(403, 'token 不存在');
+          return ctx.throw(403, 'token 不存在');
         }
 
         if (!['admin', 'superAdmin'].includes(existUser?.type)) {
-          ctx.throw(403, 'You not the administrator');
+          return ctx.throw(403, 'You not the administrator');
         }
 
-        await next();
+        return await next();
       }
 
       if (!existUser) {
-        ctx.throw(401, '未登陆');
+        return ctx.throw(401, '未登陆');
       }
+
+      return await next();
     } catch (error: any) {
       ctx.body = getErrorInfo(error);
     }

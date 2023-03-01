@@ -22,6 +22,8 @@ export default () => {
 
       const existUser = await ctx.service.userService.findById(user?.id);
 
+      ctx.state.user = existUser;
+
       if (/^\/public\//.test(url)) {
         return await next();
       }
@@ -31,7 +33,7 @@ export default () => {
           return ctx.throw(403, 'token 不存在');
         }
 
-        if (!['admin', 'superAdmin'].includes(existUser?.type)) {
+        if (!['admin', 'root'].includes(existUser?.type)) {
           return ctx.throw(403, 'You not the administrator');
         }
 

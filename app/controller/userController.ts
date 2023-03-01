@@ -236,7 +236,7 @@ export default class UserController extends BaseController {
     };
   }
 
-  async update() {
+  async updateUser() {
     const { ctx } = this;
     const { userService } = ctx.service;
 
@@ -255,9 +255,11 @@ export default class UserController extends BaseController {
       ctx.request.body,
     );
 
+    this.verifyPrivateApi(body.id);
+
     ctx.body = {
       success: true,
-      data: await userService.update(ctx.request.body.id, body),
+      data: await userService.update(body.id, body),
     };
   }
 
@@ -373,6 +375,8 @@ export default class UserController extends BaseController {
     );
 
     const { email, oldPassword, newPassword1, newPassword2 } = body;
+
+    this.verifyPrivateApiByEmail(email);
 
     await service.userService.verifyOldPassword(
       email,

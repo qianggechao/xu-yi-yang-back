@@ -59,4 +59,32 @@ export default class BaseController extends Controller {
     this.ctx.session.captcha = null;
     this.ctx.session.emailCaptcha = null;
   }
+
+  verifyPrivateApi(id: string) {
+    const { ctx } = this;
+    if (
+      ['admin', 'root'].includes(ctx.session.user?.type) &&
+      ['admin', 'root'].includes(ctx.state.user?.type)
+    ) {
+      return;
+    }
+
+    if (id !== ctx.session.user?._id || id !== ctx.state.user?._id) {
+      ctx.throw(403, 'Cannot operate other users');
+    }
+  }
+
+  verifyPrivateApiByEmail(email: string) {
+    const { ctx } = this;
+    if (
+      ['admin', 'root'].includes(ctx.session.user?.type) &&
+      ['admin', 'root'].includes(ctx.state.user?.type)
+    ) {
+      return;
+    }
+
+    if (email !== ctx.session.user?.email || email !== ctx.state.user?.email) {
+      ctx.throw(403, 'Cannot operate other users');
+    }
+  }
 }

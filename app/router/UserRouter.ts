@@ -35,7 +35,7 @@ export default (app: Application) => {
     '/private/user/updateUserPassword',
     userController.updatePassword,
   );
+  router.post('/private/user/updateUser', userController.updateUser);
 
   router.delete('/admin/user/deleteUser', userController.delete);
-  router.post('/admin/user/updateUser', userController.update);
 };

@@ -117,6 +117,7 @@ export default class UserService extends Service {
       { expiresIn: '3s' },
     );
     ctx.session = null;
+    ctx.state = null;
   }
 
   async verifyPassword(args: {

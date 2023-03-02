@@ -23,6 +23,16 @@ const getErrorInfo = (error: any) => {
     };
   }
 
+  if (error?.name === 'TokenExpiredError') {
+    return {
+      success: false,
+      msg: '无效token，登陆信息过期，请重新登陆',
+      status: 401,
+      data: null,
+      error,
+    };
+  }
+
   return {
     success: false,
     msg: error?.message || 'Server error',

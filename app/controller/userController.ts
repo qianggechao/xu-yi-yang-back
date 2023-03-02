@@ -178,27 +178,25 @@ export default class UserController extends BaseController {
     const { password, email } = ctx.request.body;
     const { userService } = ctx.service;
 
+    const userEmail = await userService.findUserByEmail(email);
+    if (!userEmail) {
+      throw new Error('邮箱错误');
+    }
+
     const existUser = await userService.findOne({
       password: encryptPassword(password),
       email,
     });
-
-    if (existUser) {
-      // 生成 token 信息，然后将 token 返回给前端，前端做 localStorage 加在请求头 返回给后端（后端再做校验）
-      ctx.body = {
-        token: userService.generateToken(existUser),
-        success: true,
-        msg: 'login success',
-        data: userService.formatUserInfo(existUser),
-      };
-    } else {
-      ctx.body = {
-        data: null,
-        msg: 'account or password error',
-        success: false,
-        error: new Error('account or password error'),
-      };
+    if (!existUser) {
+      throw new Error('密码错误');
     }
+
+    ctx.body = {
+      token: userService.generateToken(existUser),
+      success: true,
+      msg: 'login success',
+      data: userService.formatUserInfo(existUser),
+    };
   }
 
   public loginOut() {

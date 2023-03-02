@@ -91,7 +91,7 @@ export default class UserService extends Service {
         id: _id,
       },
       app.config.jwt.secret,
-      { expiresIn: '48h' },
+      { expiresIn: ms('2d') },
     );
 
     ctx.session.user = user;
@@ -108,14 +108,18 @@ export default class UserService extends Service {
       this.ctx.throw('未登陆');
     }
 
-    app.jwt.sign(
+    const token = app.jwt.sign(
       {
         email,
         id: _id,
+        // exp: Math.floor(Date.now() / 1000) + 10,
       },
       app.config.jwt.secret,
-      { expiresIn: '3s' },
+      { expiresIn: 10 },
     );
+
+    console.log(token);
+
     ctx.session = null;
     ctx.state = null;
   }

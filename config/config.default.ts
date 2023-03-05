@@ -16,7 +16,7 @@ export default (appInfo: EggAppInfo) => {
 
     mongoose: {
       client: {
-        url: process.env.MONGO_URL || '',
+        url: process.env.MONGO_URL || '127.0.0.1::27017',
         options: {
           useUnifiedTopology: true,
           user: process.env.MONGO_USERNAME,

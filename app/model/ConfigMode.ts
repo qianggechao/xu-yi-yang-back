@@ -13,6 +13,8 @@ const ConfigMode = (app: Application) => {
       author: String,
       copyright: String,
       email: String,
+      phone: { type: Number, match: /^\d{11}$/ },
+      logo: String,
       links: [
         {
           title: { type: String, required: true },

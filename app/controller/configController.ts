@@ -9,6 +9,9 @@ const configValidate = (action: 'create' | 'update' = 'create') => {
     content: { type: 'string', required: false },
     author: { type: 'string', required: false },
     copyright: { type: 'string', required: false },
+    email: { type: 'email', required: false },
+    phone: { type: 'int', required: false, format: /^\d{11}$/ },
+    logo: { type: 'string', required: false },
     links: { type: 'array', required: false },
   };
 };

@@ -6,6 +6,10 @@ dotenv.config();
 
 console.log(process.env.MONGO_USERNAME);
 export default (appInfo: EggAppInfo) => {
+  if (!process.env?.MONGO_URL) {
+    throw new Error('mongodb url unfound');
+  }
+
   const config: PowerPartial<EggAppConfig> = {
     // override config from framework / plugin
     // use for cookie sign key, should change to your own and keep security
@@ -16,7 +20,7 @@ export default (appInfo: EggAppInfo) => {
 
     mongoose: {
       client: {
-        url: process.env.MONGO_URL || '',
+        url: process.env.MONGO_URL,
         options: {
           useUnifiedTopology: true,
           user: process.env.MONGO_USERNAME,

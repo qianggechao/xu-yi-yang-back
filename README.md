@@ -1,6 +1,6 @@
-# hackernews-async-ts
+# koa js
 
-[Hacker News](https://news.ycombinator.com/) showcase using typescript && egg
+[url](https://www.koajs.com.cn/) showcase using typescript && koa
 
 ## QuickStart
 
@@ -33,4 +33,5 @@ $ npm start
 - Typescript 2.8+
 
 ### Packge Description
+
 - [jsencrypt](https://www.npmjs.com/package/jsencrypt) https://www.bejson.com/enc/rsa/ generate public&private key

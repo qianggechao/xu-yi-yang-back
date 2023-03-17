@@ -7,5 +7,5 @@ export type UserType = {
   avatar: string;
   // 个性签名
   brief: string;
-  type: 'admin' | 'user' | 'superAdmin';
+  type: 'admin' | 'user' | 'root';
 };

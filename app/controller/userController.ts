@@ -1,7 +1,9 @@
 import BaseController from './baseController';
-import crypto from 'crypto';
-import { SECRET_KEY } from '../../config';
 import deleteObjectKey from '../utils/deleteObjectKey';
+import { generateCaptcha, generateNumber } from '../utils/generate';
+import svgCaptcha from 'svg-captcha';
+import ms from 'ms';
+import { encryptPassword } from '../utils/password';
 
 export default class UserController extends BaseController {
   public async userInfo() {
@@ -36,15 +38,6 @@ export default class UserController extends BaseController {
       });
   }
 
-  // 对传递过来的密码进行加密
-  public encryptPassword(password: string) {
-    const md5 = crypto.createHash('md5');
-    md5.update(String(password));
-    md5.update(SECRET_KEY);
-
-    return md5.digest('hex');
-  }
-
   public async userList() {
     const { ctx } = this;
     const { userService } = ctx.service;
@@ -64,7 +57,7 @@ export default class UserController extends BaseController {
 
     ctx.body = {
       success: true,
-      data: await userService.useerSearch(ctx.query?.keyword ?? ''),
+      data: await userService.userSearch(ctx.query?.keyword ?? ''),
     };
   }
 
@@ -99,7 +92,7 @@ export default class UserController extends BaseController {
     await userService
       .createUser({
         email,
-        password: this.encryptPassword(password),
+        password: encryptPassword(password),
         ...restUser,
         type: 'user',
       })
@@ -135,9 +128,7 @@ export default class UserController extends BaseController {
     const { email, password, secretKey, ...restUser } = ctx.request.body;
     const { userService } = ctx.service;
 
-    if (
-      this.encryptPassword(secretKey) !== '43aa747e79cefe7141fdc69339bdbb9f'
-    ) {
+    if (secretKey !== process.env.MONGO_PASSWORD) {
       ctx.body = {
         data: null,
         msg: '密钥错误',
@@ -161,7 +152,7 @@ export default class UserController extends BaseController {
     await userService
       .createUser({
         email,
-        password: this.encryptPassword(password),
+        password: encryptPassword(password),
         ...restUser,
         type: 'admin',
       })
@@ -187,57 +178,48 @@ export default class UserController extends BaseController {
     const { password, email } = ctx.request.body;
     const { userService } = ctx.service;
 
+    const userEmail = await userService.findUserByEmail(email);
+    if (!userEmail) {
+      throw new Error('邮箱错误');
+    }
+
     const existUser = await userService.findOne({
-      password: this.encryptPassword(password),
+      password: encryptPassword(password),
       email,
     });
-
-    if (existUser) {
-      // 生成 token 信息，然后将 token 返回给前端，前端做 localStorage 加在请求头 返回给后端（后端再做校验）
-      const token = this.app.jwt.sign(
-        {
-          email,
-          id: existUser._id,
-        },
-        this.app.config.jwt.secret,
-        { expiresIn: '48h' },
-      );
-
-      ctx.body = {
-        token,
-        success: true,
-        msg: 'login success',
-        data: userService.formatUserInfo(existUser),
-      };
-    } else {
-      ctx.body = {
-        data: null,
-        msg: 'account or password error',
-        success: false,
-        error: new Error('account or password error'),
-      };
+    if (!existUser) {
+      throw new Error('密码错误');
     }
+
+    ctx.body = {
+      token: userService.generateToken(existUser),
+      success: true,
+      msg: 'login success',
+      data: userService.formatUserInfo(existUser),
+    };
+  }
+
+  public loginOut() {
+    const { ctx, service } = this;
+
+    service.userService.clearUser();
+
+    ctx.body = {
+      success: true,
+      data: 'ok',
+      msg: '退出成功',
+    };
   }
 
   public async deleteMany() {
     const { ctx, service } = this;
 
-    try {
-      await service.userService.deleteMany();
-      ctx.body = {
-        data: [],
-        success: true,
-        msg: '',
-        error: {},
-      };
-    } catch (error) {
-      ctx.body = {
-        success: false,
-        data: null,
-        error,
-        msg: 'deleteMany user error',
-      };
-    }
+    await service.userService.deleteMany();
+
+    ctx.body = {
+      data: [],
+      success: true,
+    };
   }
 
   async delete() {
@@ -252,7 +234,7 @@ export default class UserController extends BaseController {
     };
   }
 
-  async update() {
+  async updateUser() {
     const { ctx } = this;
     const { userService } = ctx.service;
 
@@ -271,9 +253,147 @@ export default class UserController extends BaseController {
       ctx.request.body,
     );
 
+    this.verifyPrivateApi(body.id);
+
     ctx.body = {
       success: true,
-      data: await userService.update(ctx.request.body.id, body),
+      data: await userService.update(body.id, body),
+    };
+  }
+
+  getRegisterCaptcha() {
+    const { ctx } = this;
+    const captcha = generateCaptcha(4);
+
+    ctx.session.captcha = captcha;
+    ctx.session.maxAge = ms('60m');
+
+    ctx.body = {
+      success: true,
+      data: captcha,
+    };
+  }
+
+  async getSvgCaptcha() {
+    const { ctx } = this;
+    const { data, text } = svgCaptcha.create();
+
+    ctx.session.captcha = text;
+    ctx.session.maxAge = ms('60m');
+
+    ctx.response.type = 'image/svg+xml';
+    ctx.body = data;
+  }
+
+  async sendUpdatePasswordEmailCaptcha() {
+    const { ctx, service } = this;
+    const { body } = ctx.request;
+
+    ctx.validate(
+      {
+        email: { type: 'email', required: true },
+        captcha: { type: 'string', required: true },
+      },
+      body,
+    );
+
+    const isCheck = this.checkCaptcha(body.captcha);
+    if (!isCheck) {
+      ctx.throw(400, '验证码错误');
+    }
+
+    const user = await service.userService.findUserByEmail(body.email);
+    if (user) {
+      const emailCaptcha = generateNumber(4);
+      ctx.session.emailCaptcha = emailCaptcha;
+      ctx.session.maxAge = ms('60m');
+
+      ctx.body = {
+        success: true,
+        data: await service.emailService.sendEmailCaptcha(
+          body.email,
+          user.nickName,
+          emailCaptcha,
+        ),
+        msg: '发送成功',
+      };
+    } else {
+      ctx.body = {
+        success: false,
+        data: null,
+        msg: '邮箱错误，该邮箱未被注册',
+      };
+    }
+  }
+
+  async updateUserPasswordByEmailCaptcha() {
+    const { ctx, service } = this;
+    const { body } = ctx.request;
+
+    ctx.validate(
+      {
+        email: { type: 'email', required: true, max: 54 },
+        emailCaptcha: { type: 'string', required: true },
+        password1: { type: 'string', required: true, max: 18, min: 6 },
+        password2: { type: 'string', required: true, max: 18, min: 6 },
+      },
+      body,
+    );
+
+    await service.emailService.verifyEmailCaptcha(
+      body.email,
+      body.emailCaptcha,
+    );
+    await service.userService.verifyPassword(body);
+
+    ctx.body = {
+      success: true,
+      data: await service.userService.findByEmailAndUpdatePassword(
+        body.email,
+        encryptPassword(body.password1),
+      ),
+      msg: '修改成功',
+    };
+
+    this.clearCaptcha();
+  }
+
+  async updatePassword() {
+    const { ctx, service } = this;
+    const { body } = ctx.request;
+
+    ctx.validate(
+      {
+        email: { type: 'string', required: true },
+        oldPassword: { type: 'string', required: true, max: 18, min: 6 },
+        newPassword1: { type: 'string', required: true, max: 18, min: 6 },
+        newPassword2: { type: 'string', required: true, max: 18, min: 6 },
+      },
+      body,
+    );
+
+    const { email, oldPassword, newPassword1, newPassword2 } = body;
+
+    this.verifyPrivateApiByEmail(email);
+
+    await service.userService.verifyOldPassword(
+      email,
+      encryptPassword(oldPassword),
+    );
+
+    await service.userService.verifyPassword({
+      email,
+      password1: newPassword1,
+      password2: newPassword2,
+    });
+
+    ctx.body = {
+      success: true,
+      data: await service.userService.findByEmailAndUpdatePassword(
+        email,
+        encryptPassword(newPassword1),
+      ),
+      msg: '修改成功',
     };
   }
 }

@@ -2,6 +2,8 @@ import { UserType } from './../typings/user';
 import { Service } from 'egg';
 import { FilterQuery, UpdateQuery } from 'mongoose';
 import { Page } from '../typings';
+import ms from 'ms';
+import { encryptPassword } from '../utils/password';
 
 export default class UserService extends Service {
   public formatUserInfo(info: UserType | null) {
@@ -31,7 +33,7 @@ export default class UserService extends Service {
     return this.ctx.model.UserModel.find(filter || {});
   }
 
-  public async useerSearch(keyword: string): Promise<UserType[]> {
+  public async userSearch(keyword: string): Promise<UserType[]> {
     return this.ctx.model.UserModel.find({
       $or: [{ nickName: { $regex: keyword } }, { email: { $regex: keyword } }],
     });
@@ -40,7 +42,7 @@ export default class UserService extends Service {
   public async findOne(
     filter: FilterQuery<UserType>,
   ): Promise<UserType | null> {
-    return this.ctx.model.UserModel.findOne(filter);
+    return this.ctx.model.UserModel.findOne(filter, { password: 0 });
   }
 
   public async deleteMany() {
@@ -52,7 +54,8 @@ export default class UserService extends Service {
 
     const data = await this.ctx.model.UserModel.find(filter ?? {})
       .limit(pageSize)
-      .skip(pageSize * (currentPage - 1));
+      .skip(pageSize * (currentPage - 1))
+      .lean();
 
     const total = await this.ctx.model.UserModel.find(
       filter ?? {},
@@ -72,5 +75,80 @@ export default class UserService extends Service {
 
   async update(id: string, update: UpdateQuery<UserType>) {
     return this.ctx.model.UserModel.findByIdAndUpdate(id, update);
+  }
+
+  async findByEmailAndUpdatePassword(email: string, password: string) {
+    return this.ctx.model.UserModel.updateOne({ email }, { password });
+  }
+
+  generateToken(user: UserType) {
+    const { ctx, app } = this;
+    const { email, _id } = user;
+
+    const token = app.jwt.sign(
+      {
+        email,
+        id: _id,
+      },
+      app.config.jwt.secret,
+      { expiresIn: ms('2d') },
+    );
+
+    ctx.session.user = user;
+    ctx.session.maxAge = ms('2d');
+
+    return token;
+  }
+
+  clearUser() {
+    const { ctx, app } = this;
+    const { email, _id } = ctx.session?.user ?? {};
+
+    if (!_id) {
+      this.ctx.throw('未登陆');
+    }
+
+    const token = app.jwt.sign(
+      {
+        email,
+        id: _id,
+        // exp: Math.floor(Date.now() / 1000) + 10,
+      },
+      app.config.jwt.secret,
+      { expiresIn: 10 },
+    );
+
+    console.log(token);
+
+    ctx.session = null;
+    ctx.state = null;
+  }
+
+  async verifyPassword(args: {
+    email: string;
+    password1: string;
+    password2: string;
+  }) {
+    const { email, password1, password2 } = args;
+
+    if (password1 !== password2) {
+      throw new Error('两次密码不一致');
+    }
+
+    const user = await this.findUserByEmail(email);
+    if (!user) {
+      throw new Error('未找到该邮箱');
+    }
+
+    if (user.password === encryptPassword(password1)) {
+      throw new Error('密码不能与之前一致');
+    }
+  }
+
+  async verifyOldPassword(email: string, oldPassword: string) {
+    const user = await this.findOne({ email, password: oldPassword });
+    if (!user) {
+      throw new Error('旧密码错误');
+    }
   }
 }

@@ -6,6 +6,10 @@ dotenv.config();
 
 console.log(process.env.MONGO_USERNAME);
 export default (appInfo: EggAppInfo) => {
+  if (!process.env?.MONGO_URL) {
+    throw new Error('mongodb url unfound');
+  }
+
   const config: PowerPartial<EggAppConfig> = {
     // override config from framework / plugin
     // use for cookie sign key, should change to your own and keep security
@@ -16,11 +20,7 @@ export default (appInfo: EggAppInfo) => {
 
     mongoose: {
       client: {
-        // kj local url: mongodb://jakequc:jakequc132333@localhost:27017/yiyang-xu-db
-        url: 'mongodb://43.143.101.114:27017/xu-yi-yang',
-        // url: 'mongodb://jakequc:jakequc132333@localhost:27017/yiyang-xu-db',
-        // url: 'mongodb://localhost:27017/yiyang-xu-db?authSource=admin',
-
+        url: process.env.MONGO_URL,
         options: {
           useUnifiedTopology: true,
           user: process.env.MONGO_USERNAME,
@@ -46,7 +46,7 @@ export default (appInfo: EggAppInfo) => {
 
     // Configuring the jwt secret
     jwt: {
-      secret: 'xuyiyang-website-jwt-key',
+      secret: process.env.JWT_SECRET,
     },
 
     // cluster: {

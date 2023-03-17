@@ -12,6 +12,8 @@ const formatMsg = (errors: InvalidError[]) => {
 };
 
 const getErrorInfo = (error: any) => {
+  console.log('getErrorInfo', error);
+
   if (error?.code === 'invalid_param') {
     return {
       error,
@@ -21,10 +23,21 @@ const getErrorInfo = (error: any) => {
     };
   }
 
+  if (error?.name === 'TokenExpiredError') {
+    return {
+      success: false,
+      msg: '无效token，登陆信息过期，请重新登陆',
+      status: 401,
+      data: null,
+      error,
+    };
+  }
+
   return {
     success: false,
-    msg: 'Server error',
-    status: 501,
+    msg: error?.message || 'Server error',
+    status: error?.status || 501,
+    data: null,
     error,
   };
 };

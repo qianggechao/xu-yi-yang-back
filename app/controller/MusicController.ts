@@ -68,7 +68,213 @@ export default class MusicController extends BaseController {
 
     ctx.body = {
       success: true,
-      data: await service.musicService.delete(ctx.request.query.id),
+      data: (await service.musicService.delete(ctx.request.query.id)) || {},
+    };
+  }
+
+  async addMusicChildren() {
+    const { ctx, service } = this;
+
+    ctx.validate(
+      { id: { type: 'string', required: true }, children: 'array' },
+      ctx.request.body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.musicService.addChildren(
+        ctx.request.body.id,
+        ctx.request.body.children,
+      ),
+    };
+  }
+
+  async updateMusicChildren() {
+    const { ctx, service } = this;
+
+    ctx.validate(
+      { id: { type: 'string', required: true }, children: 'array' },
+      ctx.request.body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.musicService.updateChildren(
+        ctx.request.body.id,
+        ctx.request.body.children,
+      ),
+    };
+  }
+
+  async deleteMusicChildren() {
+    const { ctx, service } = this;
+    const query = ctx.request.query;
+
+    ctx.validate(
+      {
+        musicId: { type: 'string', required: true },
+        childrenId: { type: 'string', required: true },
+      },
+      query,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.musicService.deleteChildren(
+        query.musicId,
+        query.childrenId,
+      ),
+    };
+  }
+
+  async setMusicLike() {
+    const { ctx, service } = this;
+    const body = ctx.request.body;
+
+    ctx.validate(
+      {
+        userId: { type: 'string', required: true },
+        musicId: { type: 'string', required: true },
+      },
+      body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.musicService.setLike(body.musicId, body.userId),
+    };
+  }
+
+  async setManyMusicLike() {
+    const { ctx, service } = this;
+    const body = ctx.request.body;
+
+    ctx.validate(
+      {
+        userIds: { type: 'array', required: true },
+        musicId: { type: 'string', required: true },
+      },
+      body,
+    );
+
+    ctx.body = {
+      success: true,
+      data: await service.musicService.setManyLike(body.musicId, body.userIds),
+    };
+  }
+
+  async addMusicMessage() {
+    const { ctx, service } = this;
+
+    ctx.validate(
+      {
+        userId: { type: 'string', required: true },
+        musicId: { type: 'string', required: true },
+        content: { type: 'string', required: true },
+      },
+      ctx.request.body,
+    );
+
+    const { userId, musicId, content } = ctx.request.body;
+
+    ctx.body = {
+      success: true,
+      data: await service.musicService.addMessage(musicId, userId, content),
+    };
+  }
+
+  async updateMusicMessage() {
+    const { ctx, service } = this;
+
+    ctx.validate(
+      {
+        messageId: { type: 'string', required: true },
+        musicId: { type: 'string', required: true },
+        content: { type: 'string', required: true },
+      },
+      ctx.request.body,
+    );
+
+    const { messageId, musicId, content } = ctx.request.body;
+    ctx.body = {
+      success: true,
+      data: await service.musicService.updateMessage(
+        musicId,
+        messageId,
+        content,
+      ),
+    };
+  }
+
+  async deleteMusicMessage() {
+    const { ctx, service } = this;
+
+    ctx.validate(
+      {
+        messageId: { type: 'string', required: true },
+        musicId: { type: 'string', required: true },
+      },
+      ctx.request.query,
+    );
+
+    const { messageId, musicId } = ctx.request.query;
+    ctx.body = {
+      success: true,
+      data: await service.musicService.deleteMessage(musicId, messageId),
+    };
+  }
+
+  async setManyMusicMessage() {
+    const { ctx, service } = this;
+
+    ctx.validate(
+      {
+        musicId: { type: 'string', required: true },
+        messages: { type: 'array', required: true },
+      },
+      ctx.request.body,
+    );
+
+    const { messages, musicId } = ctx.request.body;
+    ctx.body = {
+      success: true,
+      data: await service.musicService.setManyMessage(musicId, messages),
+    };
+  }
+
+  async setMusicStar() {
+    const { ctx, service } = this;
+
+    ctx.validate(
+      {
+        userId: { type: 'string', required: true },
+        musicId: { type: 'string', required: true },
+      },
+      ctx.request.body,
+    );
+
+    const { userId, musicId } = ctx.request.body;
+    ctx.body = {
+      success: true,
+      data: await service.musicService.setStar(musicId, userId),
+    };
+  }
+
+  async setManyMusicStar() {
+    const { ctx, service } = this;
+
+    ctx.validate(
+      {
+        userIds: { type: 'array', required: true },
+        musicId: { type: 'string', required: true },
+      },
+      ctx.request.body,
+    );
+
+    const { userIds, musicId } = ctx.request.body;
+    ctx.body = {
+      success: true,
+      data: await service.musicService.setManyStar(musicId, userIds),
     };
   }
 }

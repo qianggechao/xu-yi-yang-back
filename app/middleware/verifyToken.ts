@@ -15,53 +15,37 @@ export default () => {
     ctx.request.query = filterEmptyObject(query);
 
     try {
+      const user = token
+        ? ((ctx.app.jwt.verify(token as string, ctx.app.config.jwt.secret) ||
+            {}) as Record<string, any>)
+        : {};
+
+      const existUser = await ctx.service.userService.findById(user?.id);
+
+      ctx.state.user = existUser;
+
       if (/^\/public\//.test(url)) {
-        await next();
-      } else {
-        if (token) {
-          // 有 token 需要校验
-          const { id } = ((await ctx.app.jwt.verify(
-            token as string,
-            ctx.app.config.jwt.secret,
-          )) || {}) as Record<string, any>;
-
-          const existUser = await ctx.service.userService.findById(id);
-
-          if (/^\/admin\//.test(url)) {
-            if (
-              existUser?.type === 'admin' ||
-              existUser?.type === 'superAdmin'
-            ) {
-              await next();
-            } else {
-              ctx.body = {
-                success: false,
-                msg: 'You not the administrator',
-                status: 403,
-              };
-            }
-          } else {
-            if (existUser) {
-              await next();
-            } else {
-              ctx.body = {
-                success: false,
-                msg: 'have no right',
-                status: 403,
-              };
-            }
-          }
-        } else {
-          // token 不存在
-          ctx.body = {
-            status: 403,
-            msg: 'token不存在',
-          };
-        }
+        return await next();
       }
-    } catch (error: any) {
-      console.error('error', error);
 
+      if (/^\/admin\//.test(url)) {
+        if (!existUser || !token) {
+          return ctx.throw(403, 'token 不存在');
+        }
+
+        if (!['admin', 'root'].includes(existUser?.type)) {
+          return ctx.throw(403, 'You not the administrator');
+        }
+
+        return await next();
+      }
+
+      if (!existUser) {
+        return ctx.throw(401, '未登陆');
+      }
+
+      return await next();
+    } catch (error: any) {
       ctx.body = getErrorInfo(error);
     }
   };

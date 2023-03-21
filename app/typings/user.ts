@@ -7,5 +7,14 @@ export type UserType = {
   avatar: string;
   // 个性签名
   brief: string;
-  type: 'admin' | 'user' | 'root';
+  type: keyof typeof UserTypeEnum;
 };
+
+/**
+ * 用户类型
+ */
+export enum UserTypeEnum {
+  admin = 'admin',
+  root = 'root',
+  user = 'user',
+}

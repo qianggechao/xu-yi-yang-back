@@ -6,6 +6,7 @@ export default (app: Application) => {
 
   // 以 非 /public/ 访问的接口都是需要 校验 token 的
   router.post('/public/loginUser', userController.loginUser);
+  router.post('/public/loginAdmin', userController.loginAdmin);
   router.post('/public/loginOut', userController.loginOut);
 
   router.post(

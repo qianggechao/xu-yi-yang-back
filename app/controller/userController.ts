@@ -5,6 +5,17 @@ import svgCaptcha from 'svg-captcha';
 import ms from 'ms';
 import { encryptPassword } from '../utils/password';
 
+const userValidate = (action: 'update' | 'create' = 'create') => {
+  const required = action === 'create';
+
+  return {
+    nickName: { type: 'string', required, max: 24 },
+    email: { type: 'email', required, max: 54 },
+    password: { type: 'string', required, max: 18, min: 6 },
+    avatar: { type: 'string', required: false },
+    brief: { type: 'string', required: false },
+  };
+};
 export default class UserController extends BaseController {
   public async userInfo() {
     const { ctx } = this;
@@ -63,14 +74,7 @@ export default class UserController extends BaseController {
 
   public async createUser() {
     const { ctx } = this;
-    ctx.validate(
-      {
-        nickName: { type: 'string', required: true, max: 24 },
-        email: { type: 'email', required: true, max: 54 },
-        password: { type: 'string', required: true, max: 18, min: 6 },
-      },
-      ctx.request.body,
-    );
+    ctx.validate(userValidate(), ctx.request.body);
 
     const { email, password, ...restUser } = ctx.request.body;
     this.logger.info('createUser input', ctx.request.body);
@@ -78,15 +82,8 @@ export default class UserController extends BaseController {
     const { userService } = ctx.service;
 
     const existUser = await userService.findUserByEmail(email);
-
     if (existUser) {
-      ctx.body = {
-        data: null,
-        msg: '邮箱已被注册',
-        success: false,
-      };
-
-      return;
+      throw new Error('邮箱已被注册');
     }
 
     await userService
@@ -114,69 +111,26 @@ export default class UserController extends BaseController {
   }
 
   public async createAdmin() {
-    const { ctx } = this;
-    ctx.validate(
-      {
-        nickName: { type: 'string', required: true },
-        email: { type: 'string', required: true },
-        password: { type: 'string', required: true },
-        secretKey: 'string',
-      },
-      ctx.request.body,
-    );
-
-    const { email, password, secretKey, ...restUser } = ctx.request.body;
-    const { userService } = ctx.service;
-
+    const { secretKey } = this.ctx.request.body;
     if (secretKey !== process.env.MONGO_PASSWORD) {
-      ctx.body = {
-        data: null,
-        msg: '密钥错误',
-        success: false,
-      };
-
-      return;
+      throw new Error('密钥错误');
     }
 
-    const existUser = await userService.findUserByEmail(email);
-    if (existUser) {
-      ctx.body = {
-        data: null,
-        msg: '邮箱已被注册',
-        success: false,
-      };
-
-      return;
-    }
-
-    await userService
-      .createUser({
-        email,
-        password: encryptPassword(password),
-        ...restUser,
-        type: 'admin',
-      })
-      .then((res) => {
-        ctx.body = {
-          data: userService.formatUserInfo(res),
-          msg: 'create admin success',
-          success: true,
-        };
-      })
-      .catch((error) => {
-        ctx.body = {
-          data: null,
-          msg: 'create admin failed',
-          success: false,
-          error,
-        };
-      });
+    this.createUser();
   }
 
   public async loginUser() {
     const { ctx } = this;
     const { password, email } = ctx.request.body;
     const { userService } = ctx.service;
+
+    ctx.validate(
+      {
+        password: { type: 'string', required: true },
+        email: { type: 'email', required: false },
+      },
+      ctx.request.body,
+    );
 
     const userEmail = await userService.findUserByEmail(email);
     if (!userEmail) {
@@ -199,6 +153,34 @@ export default class UserController extends BaseController {
     };
   }
 
+  public async loginAdmin() {
+    const { ctx } = this;
+    const { password, email } = ctx.request.body;
+    const { userService } = ctx.service;
+
+    const userEmail = await userService.findUserByEmail(email);
+    if (!userEmail) {
+      throw new Error('邮箱错误');
+    }
+
+    const existUser = await userService.findOne({
+      password: encryptPassword(password),
+      email,
+    });
+    if (!existUser) {
+      throw new Error('密码错误');
+    }
+    if (!['admin', 'root'].includes(existUser.type)) {
+      throw new Error('非管理员账户');
+    }
+
+    ctx.body = {
+      token: userService.generateToken(existUser),
+      success: true,
+      msg: 'login success',
+      data: userService.formatUserInfo(existUser),
+    };
+  }
   public loginOut() {
     const { ctx, service } = this;
 

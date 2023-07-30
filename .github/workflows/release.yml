@@ -37,7 +37,7 @@ jobs:
           SCRIPT_AFTER: |
             pwd
             cd /service/xyy
-            npm i
             npm stop
+            npm i
             npm run tsc
             npm start

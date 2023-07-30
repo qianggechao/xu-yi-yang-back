@@ -38,6 +38,5 @@ jobs:
             pwd
             cd /service/xyy
             npm stop
-            npm i
             npm run tsc
             npm start

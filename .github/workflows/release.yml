@@ -23,8 +23,6 @@ jobs:
        uses: actions/setup-node@v3
        with:
         node-version: ${{ matrix.node-version }}
-     - name: Install dependencies
-       run: npm install --no-frozen-lockfile
      - name: push cloud
        uses: easingthemes/ssh-deploy@main
        env:
@@ -34,4 +32,10 @@ jobs:
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: 'root'
           TARGET: '/service/xyy'
-    
+          SCRIPT_AFTER: |
+            pwd
+            cd /service/xyy
+            npm i
+            npm stop
+            npm run tsc
+            npm start

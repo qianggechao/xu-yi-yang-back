@@ -27,7 +27,8 @@ export default class MessageBoardService extends Service {
     const data = await this.ctx.model.MessageBoardModel.find(query)
       .limit(pageSize)
       .skip(pageSize * (currentPage - 1))
-      .sort({ tag: -1, createdAt: 1 });
+      .sort({ tag: -1, createdAt: 1 })
+      .populate('user');
 
     const total = await this.ctx.model.MessageBoardModel.find(
       query,
@@ -48,12 +49,8 @@ export default class MessageBoardService extends Service {
     links?: number;
   }) {
     const { userId, ...rest } = message;
-    const user = await this.service.userService.findById(userId);
-    if (!user) {
-      this.ctx.throw('user not find');
-    }
 
-    return this.ctx.model.MessageBoardModel.create({ ...rest, user });
+    return this.ctx.model.MessageBoardModel.create({ ...rest, user: userId });
   }
 
   async update(

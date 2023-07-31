@@ -4,7 +4,6 @@ import {
   MessageBoardType,
   messageBoardTypeEnum,
 } from '../typings/messageBoard';
-import { Types } from 'mongoose';
 
 const MessageBoardModel = (app: Application) => {
   const mongoose = app.mongoose;
@@ -12,13 +11,7 @@ const MessageBoardModel = (app: Application) => {
 
   const MessageBoardModelSchema = new Schema(
     {
-      user: {
-        _id: { type: Types.ObjectId, required: true },
-        nickName: { type: String, required: true },
-        email: { type: String, required: true },
-        avatar: { type: String, default: '' },
-        brief: { type: String, default: '' },
-      },
+      user: { type: mongoose.Types.ObjectId, ref: 'User', require: true },
       content: { type: String, required: true },
       type: {
         type: String,

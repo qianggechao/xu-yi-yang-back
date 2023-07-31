@@ -4,7 +4,6 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log(process.env.MONGO_USERNAME);
 export default (appInfo: EggAppInfo) => {
   if (!process.env?.MONGO_URL) {
     throw new Error('mongodb url unfound');
@@ -36,13 +35,16 @@ export default (appInfo: EggAppInfo) => {
       csrf: {
         enable: false,
       },
-      // domainWhiteList: ['http://*', 'https://*'],
+      domainWhiteList: ['http://localhost:3000/*', 'https://xuyiyang.cloud/*'],
     },
 
-    // cors: {
-    //   origin: '*',
-    //   allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
-    // },
+    cors: {
+      origin:
+        process.env?.NODE_ENV === 'development'
+          ? 'http://localhost:3000'
+          : 'https://xuyiyang.cloud',
+      allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
+    },
 
     // Configuring the jwt secret
     jwt: {
